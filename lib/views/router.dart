@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
 import 'package:sun_be_gone/views/homescreen/home.dart';
-import 'package:sun_be_gone/views/homescreen/search.dart';
+import 'package:sun_be_gone/views/search/search_page.dart';
 
 class Routing {
   static Widget go(Pages index) {
