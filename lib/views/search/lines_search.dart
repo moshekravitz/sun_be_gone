@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sun_be_gone/bloc/navigation_bloc.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
 
+typedef OnLineEditingComplete = void Function();
+
 class LinesSearch extends StatelessWidget {
-  const LinesSearch({super.key});
+  const LinesSearch({super.key,required this.onLineEditingComplete});
+
+  final OnLineEditingComplete onLineEditingComplete;
 
   @override
   Widget build(BuildContext context) {
-    final bottomNavBarBloc = BlocProvider.of<BottomNavBarBloc>(context);
     final TextEditingController _controller = TextEditingController();
 
     return Container(
@@ -28,7 +30,7 @@ class LinesSearch extends StatelessWidget {
             child: TextField(
               controller: _controller,
               textInputAction: TextInputAction.go,
-              onEditingComplete: () => bottomNavBarBloc.changeTab(Pages.home2),
+              onEditingComplete: onLineEditingComplete,
               decoration: const InputDecoration(
                 border: InputBorder.none, // Remove the default border
                 hintText: 'line numbe',

@@ -78,6 +78,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.3.3"
+  flutter_hooks:
+    dependency: "direct main"
+    description:
+      name: flutter_hooks
+      sha256: "4618087243264d5f745b2a719a9fc610768f723da570efc2d0eaefe1efcbae70"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -226,4 +234,4 @@ packages:
     version: "0.1.4-beta"
 sdks:
   dart: ">=3.1.2 <4.0.0"
-  flutter: ">=1.16.0"
+  flutter: ">=3.0.0"

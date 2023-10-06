@@ -1,21 +1,24 @@
 
 import 'package:flutter/material.dart';
-import 'package:sun_be_gone/bloc/navigation_bloc.dart';
-import 'package:sun_be_gone/models/nav_index.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class EnterSearch extends StatelessWidget {
+typedef OnSearchTapped = void Function();
+
+class EnterSearch extends HookWidget {
+
+  final OnSearchTapped onSearchTapped;
+
   const EnterSearch({
     super.key,
-    required this.bottomNavBarBloc,
+    required this.onSearchTapped,
   });
 
-  final BottomNavBarBloc bottomNavBarBloc;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: GestureDetector(
-        onTap: () => bottomNavBarBloc.changeTab(Pages.search),
+        onTap: onSearchTapped,
         child: Container(
           width: 333.0,
           height: 52.0,

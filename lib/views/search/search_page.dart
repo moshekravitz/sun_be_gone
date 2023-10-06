@@ -3,6 +3,12 @@ import 'package:sun_be_gone/views/search/directions_search.dart';
 import 'package:sun_be_gone/views/search/lines_search.dart';
 
 class SearchPage extends StatefulWidget {
+  OnDirectionEditingComplete onDirectionEditingComplete;
+  OnLineEditingComplete onLineEditingComplete;
+  SearchPage(
+      {super.key,
+      required this.onDirectionEditingComplete,
+      required this.onLineEditingComplete});
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -99,10 +105,11 @@ class _SearchPageState extends State<SearchPage> {
 
   // Placeholder widgets for different search content
   Widget buildDirectionsSearch() {
-    return DirectoinsSearch();
+    return DirectoinsSearch(
+        onDirectionEditingComplete: widget.onDirectionEditingComplete);
   }
 
   Widget buildLinesSearch() {
-    return LinesSearch();
+    return LinesSearch(onLineEditingComplete: widget.onLineEditingComplete);
   }
 }

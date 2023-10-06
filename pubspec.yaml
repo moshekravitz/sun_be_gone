@@ -38,6 +38,7 @@ dependencies:
   bloc: ^7.0.0
   flutter_bloc: ^7.0.0
   loading_animation_widget:
+  flutter_hooks: 
 
 dev_dependencies:
   flutter_test:

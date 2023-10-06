@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sun_be_gone/bloc/navigation_bloc.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
 
-class DirectoinsSearch extends StatelessWidget {
-    DirectoinsSearch({super.key});
+typedef OnDirectionEditingComplete = void Function();
 
+class DirectoinsSearch extends StatelessWidget {
+  DirectoinsSearch({super.key, required this.onDirectionEditingComplete});
+
+  final OnDirectionEditingComplete onDirectionEditingComplete;
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _controller2 = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-  final bottomNavBarBloc = BlocProvider.of<BottomNavBarBloc>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,7 +70,7 @@ class DirectoinsSearch extends StatelessWidget {
               child: TextField(
                 controller: _controller2,
                 textInputAction: TextInputAction.go,
-                onEditingComplete: () => bottomNavBarBloc.changeTab(Pages.home2),
+                onEditingComplete: onDirectionEditingComplete,
                 decoration: const InputDecoration(
                   border: InputBorder.none, // Remove the default border
                   hintText: 'destination',

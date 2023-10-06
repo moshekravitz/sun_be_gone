@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sun_be_gone/bloc/navigation_bloc.dart';
-import 'package:sun_be_gone/models/nav_index.dart';
 import 'package:sun_be_gone/views/homescreen/enter_search.dart';
 
 class Home extends StatelessWidget {
+
+final OnSearchTapped onSearchTapped;
+
+  const Home({super.key, required this.onSearchTapped});
+
+
   @override
   Widget build(BuildContext context) {
-    final bottomNavBarBloc = BlocProvider.of<BottomNavBarBloc>(context);
     return Scaffold(
       // Body
       body: Column(
@@ -41,7 +43,7 @@ class Home extends StatelessWidget {
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
-                        EnterSearch(bottomNavBarBloc: bottomNavBarBloc),
+                        EnterSearch(onSearchTapped: onSearchTapped),
                       ],
                     ),
                   ),
