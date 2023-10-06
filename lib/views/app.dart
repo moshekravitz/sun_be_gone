@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_be_gone/widgets/bottom_navigation.dart';
 import 'package:sun_be_gone/bloc/navigation_bloc.dart';
 import 'package:sun_be_gone/views/homescreen/home.dart';
-import 'package:sun_be_gone/views/router.dart';
+import 'package:sun_be_gone/views/routing.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
 
 class App extends StatefulWidget {
