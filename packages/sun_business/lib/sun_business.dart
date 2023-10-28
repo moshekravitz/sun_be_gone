@@ -3,6 +3,25 @@ library sun_business;
 import './position_calc.dart';
 import './sunPosCalc.dart';
 
+enum SittingPosition { left, right, both }
+
+class _SittingInfo {
+  SittingPosition position;
+  List<Point>? points;
+  int? protectionPercentage;
+  _SittingInfo(
+      {required this.position, this.protectionPercentage, this.points});
+}
+
+class SittingInfo {
+  SittingPosition position;
+  List<double>? segments;
+  int? protectionPercentage;
+  SittingInfo({required _SittingInfo sittingInfo, this.segments})
+      : position = sittingInfo.position,
+        protectionPercentage = sittingInfo.protectionPercentage;
+}
+
 /// A Calculator.
 class SunBusiness {
   /// Returns [value] plus 1.
@@ -63,12 +82,22 @@ class SunBusiness {
     return points;
   }
 
-  List _finalPosition(List<Point> points) //, cTime theTime, Point sunPosition)
+  _SittingInfo _finalPosition(
+      List<Point> points) //, cTime theTime, Point sunPosition)
   {
     //List<Point> listOfSunAngles = [];
     //double left = 0, right = 0;
     //Point last = Point(0,0);
-    double countLeft = 0, countRight = 0;
+    ///[countLeft] is the count of the distance the sun is on the left side of the route
+    double countLeft = 0;
+
+    ///[countRight] is the count of the distance the sun is on the right side of the route
+    double countRight = 0;
+    double countNone = 0;
+    SittingPosition lastPosition = SittingPosition.both;
+    List<Point> flippedPoints = [
+      points.first
+    ]; //points where the position has changed
     var it = points.iterator;
     it.moveNext();
     Point currentPoint = Point.copy(it.current);
@@ -102,48 +131,128 @@ class SunBusiness {
         print(spaResult);
       }
 
-      double myZenith = offsetToNext.directionInAngle();
+      double myAzimuth = offsetToNext.directionInAngle();
 
-      double offsetOfSunAndDirection = spa.azimuth! - myZenith;
+      double offsetOfSunAndDirection = spa.azimuth! - myAzimuth;
       //claculating where the sun will be relative to me at current point at current direction
       if (offsetOfSunAndDirection > 0 &&
           offsetOfSunAndDirection < 180 &&
           spa.zenith! < 87 &&
           spa.zenith! > 0) {
         countRight += offsetToNext.distance();
+
+        if (lastPosition == SittingPosition.left) {
+          flippedPoints.add(currentPoint);
+        }
+        lastPosition = SittingPosition.right;
       } else if ((offsetOfSunAndDirection < 0 ||
               offsetOfSunAndDirection > 180) &&
           spa.zenith! < 87 &&
           spa.zenith! > 0) {
         countLeft += offsetToNext.distance();
+
+        if (lastPosition == SittingPosition.right) {
+          flippedPoints.add(currentPoint);
+        }
+        lastPosition = SittingPosition.left;
+      }
+      else {
+          countNone += offsetToNext.distance();
       }
       currentPoint = Point.copy(it.current);
     }
+    flippedPoints.add(points.last);
     // TwoIntergers result = TwoIntergers(countright,countleft);
     // return result;
 
     // bool a = false;
-    late int returning;
-    if (countRight == countLeft) {
+    late SittingPosition position;
+    int protectionPercentage;
+    print('countLeft is $countLeft');
+    print('countRight is $countRight');
+    print('countNone is $countNone');
+    if(countRight == 0.0 && countLeft == 0.0)
+    {
+        position = SittingPosition.both;
+        protectionPercentage = 100;
+        return _SittingInfo(position: position, points: flippedPoints..add(points.last), protectionPercentage: protectionPercentage);
+    }
+    int rightPercentage = (countRight / (countRight + countLeft + countNone) * 100).round();
+    int leftPercentage = (countLeft / (countRight + countLeft + countNone) * 100).round();
+    if ((rightPercentage - leftPercentage).abs() == 0) {
       if (countRight == 0) {
-        print("sit Where ever you want!");
-        returning = 4;
+          //no sun
+        position = SittingPosition.both;
+        protectionPercentage = 100;
+      } else {
+        protectionPercentage = 50;
+        position = SittingPosition.both;
       }
-      returning = 3;
-    } else if (countLeft > countRight) {
-      print("sit Right");
-      returning = 1;
-    } //left
-    else
-      print("sit Left");
-    returning = 2; //right
-    return [points, returning];
+    } else if (leftPercentage > rightPercentage) {
+      //sit right
+      position = SittingPosition.right;
+      protectionPercentage = leftPercentage;
+      print('protection percentage is $protectionPercentage');
+    } 
+    else {
+      //sit left
+      position = SittingPosition.left;
+      protectionPercentage = rightPercentage;
+          
+      print('protection percentage is $protectionPercentage');
+    }
+
+    return _SittingInfo(
+        position: position,
+        points: flippedPoints,
+        protectionPercentage: protectionPercentage);
   }
 
   /// The final sitting place given a [str].
-  List whereToSit(String str) {
-    return _finalPosition(_polylineDecode(str));
+  SittingInfo whereToSit(String str, Point departure, Point destination) {
+      List<Point> decodedPoints = _polylineDecode(str);
+      print ('points count is ${decodedPoints.length}');
+      decodedPoints = Point.removeIrelevent(decodedPoints, departure, destination);
+      print ('points count after removing is ${decodedPoints.length}');
+    _SittingInfo sittingInfo = _finalPosition(decodedPoints);
+
+    List<Point> points = sittingInfo.points!;
+    List<double> segments = [];
+    Point firstPoint = points.first;
+
+    var totalDistance = points.last.distanceTo(points.first);
+
+    var it = sittingInfo.points!.iterator;
+    it.moveNext();
+    while (it.moveNext()) {
+      double milestone = it.current.distanceTo(firstPoint) / totalDistance;
+      segments.add(milestone);
+    }
+    segments.add(1);
+    return SittingInfo(sittingInfo: sittingInfo, segments: segments);
   }
 
-  int addOne(int value) => value + 1;
+  /// The final sitting place given a [str].
+  SittingInfo whereToSitP(List<Point> shapePoints, Point departure, Point destination) {
+      //List<Point> decodedPoints = _polylineDecode(str);
+      //print ('points count is ${decodedPoints.length}');
+      List<Point> decodedPoints = Point.removeIrelevent(shapePoints, departure, destination);
+      //print ('points count after removing is ${decodedPoints.length}');
+    _SittingInfo sittingInfo = _finalPosition(decodedPoints);
+
+    List<Point> points = sittingInfo.points!;
+    List<double> segments = [];
+    Point firstPoint = points.first;
+
+    var totalDistance = points.last.distanceTo(points.first);
+
+    var it = sittingInfo.points!.iterator;
+    it.moveNext();
+    while (it.moveNext()) {
+      double milestone = it.current.distanceTo(firstPoint) / totalDistance;
+      segments.add(milestone);
+    }
+    segments.add(1);
+    return SittingInfo(sittingInfo: sittingInfo, segments: segments);
+  }
 }

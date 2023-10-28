@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:sun_be_gone/models/bus_routes.dart';
 import 'package:sun_be_gone/views/homescreen/enter_search.dart';
+import 'package:sun_be_gone/views/search/routes_list_view.dart';
 
 class Home extends StatelessWidget {
-
-final OnSearchTapped onSearchTapped;
+  final OnSearchTapped onSearchTapped;
 
   const Home({super.key, required this.onSearchTapped});
-
 
   @override
   Widget build(BuildContext context) {
@@ -57,15 +57,13 @@ final OnSearchTapped onSearchTapped;
   }
 }
 
-
 class Home2 extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       // Body
-      body: Center(
-        child: Text("Home Page 2"),
-      ),
+      body: Text('No routes found'),
     );
   }
 }

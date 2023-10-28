@@ -2,8 +2,8 @@
 enum Pages {
     home,
     home2,
-    home3,
     search,
+    results,
 }
 
 class NavIndex {

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
 
-typedef OnLineEditingComplete = void Function();
+typedef OnSubmittedLine = void Function(String? value);
 
 class LinesSearch extends StatelessWidget {
-  const LinesSearch({super.key,required this.onLineEditingComplete});
+  const LinesSearch({super.key,required this.onSubmittedLine});
 
-  final OnLineEditingComplete onLineEditingComplete;
+  final OnSubmittedLine onSubmittedLine;
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +30,10 @@ class LinesSearch extends StatelessWidget {
             child: TextField(
               controller: _controller,
               textInputAction: TextInputAction.go,
-              onEditingComplete: onLineEditingComplete,
+              onChanged: onSubmittedLine,
               decoration: const InputDecoration(
                 border: InputBorder.none, // Remove the default border
-                hintText: 'line numbe',
+                hintText: 'line numbe',
                 contentPadding: EdgeInsets.symmetric(
                     horizontal: 10), // Optional: Adjust text padding
               ),

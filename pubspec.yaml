@@ -35,10 +35,13 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  http: ^1.1.0
   bloc: ^7.0.0
   flutter_bloc: ^7.0.0
   loading_animation_widget:
   flutter_hooks: 
+  sun_business:
+    path: ./packages/sun_business
 
 dev_dependencies:
   flutter_test:
