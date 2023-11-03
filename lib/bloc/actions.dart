@@ -42,7 +42,27 @@ class GetStopsAction extends AppAction {
   const GetStopsAction({required this.routeId});
 }
 
+class DateTimePickedAction extends AppAction {
+  final DateTime dateTime;
+  const DateTimePickedAction({required this.dateTime});
+}
+
 @immutable
 class StopPickerClosedAction extends AppAction {
-  const StopPickerClosedAction();
+  final int departureIndex;
+  final int destinationIndex;
+  const StopPickerClosedAction({
+    required this.departureIndex,
+    required this.destinationIndex,
+  });
+}
+
+@immutable
+class NoRouteFoundAction extends AppAction {
+  const NoRouteFoundAction();
+}
+
+@immutable
+class NavigatedToBookmarksAction extends AppAction {
+  const NavigatedToBookmarksAction();
 }

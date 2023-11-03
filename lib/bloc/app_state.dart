@@ -2,11 +2,20 @@ import 'package:flutter/foundation.dart';
 import 'package:sun_be_gone/models/bus_routes.dart';
 import 'package:sun_be_gone/models/extended_routes.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
+import 'package:sun_be_gone/models/route_quary_info.dart';
 import 'package:sun_be_gone/models/stop_info.dart';
 import 'package:sun_business/position_calc.dart' show Point;
 import 'package:sun_business/sun_business.dart' show SittingInfo;
 
-enum Errors { serverDown, noResults, noStops, noRoutes, noShape, noExtendedRoutes }
+enum Errors {
+  error,
+  serverDown,
+  noResults,
+  noStops,
+  noRoutes,
+  noShape,
+  noExtendedRoutes,
+}
 
 @immutable
 class AppState {
@@ -23,46 +32,23 @@ class AppState {
 
 @immutable
 class DataState extends AppState {
-  final Iterable<BusRoutes?>? routes;
-  final ExtendedRoutes? extendedRoutes;
-  final Iterable<StopInfo?>? stops;
-  final List<Point>? shape;
+  final RouteQuaryInfo? quaryInfo;
   final Errors? error;
 
   const DataState({
     required super.navIndex,
     required super.isLoading,
     required super.isInitialized,
-    this.routes,
-    this.extendedRoutes,
-    this.stops,
-    this.shape,
+    this.quaryInfo,
     this.error,
   });
 
   DataState.init()
       : this(
-            routes: null,
-            extendedRoutes: null,
-            stops: null,
-            shape: null,
+            quaryInfo: null,
             navIndex: NavIndex(Pages.home),
             isLoading: false,
             isInitialized: false);
-}
-
-class BusResultState extends DataState {
-
-  const BusResultState({
-    required super.navIndex,
-    required super.isLoading,
-    required super.isInitialized,
-    required super.routes,
-    required super.extendedRoutes,
-    required super.stops,
-    required super.shape,
-    super.error,
-  });
 }
 
 class StopPickerState extends DataState {
@@ -72,10 +58,7 @@ class StopPickerState extends DataState {
     required super.navIndex,
     required super.isLoading,
     required super.isInitialized,
-    required super.routes,
-    required super.extendedRoutes,
-    required super.stops,
-    required super.shape,
+    required super.quaryInfo,
     required this.isStopPickerDialogOpen,
     super.error,
   });
@@ -89,12 +72,24 @@ class ResultsState extends DataState {
     required super.navIndex,
     required super.isLoading,
     required super.isInitialized,
-    required super.routes,
-    required super.extendedRoutes,
-    required super.stops,
-    required super.shape,
+    required super.quaryInfo,
     required this.hasResults,
     this.sittingInfo,
+    super.error,
+  });
+}
+
+class BookmarksState extends DataState {
+  final Iterable<BusRoutes> historyRoutes;
+  final Iterable<BusRoutes> bookmarksRoutes;
+
+  const BookmarksState({
+    required super.navIndex,
+    required super.isLoading,
+    required super.isInitialized,
+    required super.quaryInfo,
+    required this.historyRoutes,
+    required this.bookmarksRoutes,
     super.error,
   });
 }

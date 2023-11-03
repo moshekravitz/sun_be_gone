@@ -1,7 +1,7 @@
 
 enum Pages {
     home,
-    home2,
+    bookmarks,
     search,
     results,
 }
@@ -13,4 +13,14 @@ class NavIndex {
 
     int get index => pageIndex.index;
     String get name => pageIndex.toString();
+
+    @override
+    bool operator ==(Object other) =>
+        identical(this, other) ||
+        other is NavIndex &&
+            runtimeType == other.runtimeType &&
+            pageIndex == other.pageIndex;
+
+    @override
+    int get hashCode => pageIndex.hashCode;
 }

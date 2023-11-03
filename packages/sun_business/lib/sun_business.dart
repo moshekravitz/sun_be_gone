@@ -83,6 +83,7 @@ class SunBusiness {
   }
 
   _SittingInfo _finalPosition(
+  DateTime dateTime,
       List<Point> points) //, cTime theTime, Point sunPosition)
   {
     //List<Point> listOfSunAngles = [];
@@ -106,13 +107,13 @@ class SunBusiness {
       Point offsetToNext = it.current - currentPoint;
       //cLocation pointLocation = cLocation(it.current.longitude,it.current.latitude);
       SpaStruct spa = SpaStruct(
-          DateTime.now().year,
-          DateTime.now().month,
-          DateTime.now().day,
-          DateTime.now().hour,
-          DateTime.now().minute,
-          DateTime.now().second.toDouble(),
-          DateTime.now().timeZoneOffset.inHours.toDouble(),
+          dateTime.year,
+          dateTime.month,
+          dateTime.day,
+          dateTime.hour,
+          dateTime.minute,
+          dateTime.second.toDouble(),
+          dateTime.timeZoneOffset.inHours.toDouble(),
           0,
           67,
           currentPoint.longitude,
@@ -209,12 +210,12 @@ class SunBusiness {
   }
 
   /// The final sitting place given a [str].
-  SittingInfo whereToSit(String str, Point departure, Point destination) {
+  Future<SittingInfo> whereToSit(String str, Point departure, Point destination, DateTime dateTime) {
       List<Point> decodedPoints = _polylineDecode(str);
       print ('points count is ${decodedPoints.length}');
-      decodedPoints = Point.removeIrelevent(decodedPoints, departure, destination);
-      print ('points count after removing is ${decodedPoints.length}');
-    _SittingInfo sittingInfo = _finalPosition(decodedPoints);
+      List<Point> finalPointsList = Point.removeIrelevent(decodedPoints, departure, destination);
+      print ('points count after removing is ${finalPointsList.length}');
+    _SittingInfo sittingInfo = _finalPosition(dateTime ,finalPointsList);
 
     List<Point> points = sittingInfo.points!;
     List<double> segments = [];
@@ -229,16 +230,16 @@ class SunBusiness {
       segments.add(milestone);
     }
     segments.add(1);
-    return SittingInfo(sittingInfo: sittingInfo, segments: segments);
+    return Future(() => SittingInfo(sittingInfo: sittingInfo, segments: segments));
   }
 
   /// The final sitting place given a [str].
-  SittingInfo whereToSitP(List<Point> shapePoints, Point departure, Point destination) {
+  Future<SittingInfo> whereToSitP(List<Point> shapePoints, Point departure, Point destination, DateTime dateTime) {
       //List<Point> decodedPoints = _polylineDecode(str);
       //print ('points count is ${decodedPoints.length}');
       List<Point> decodedPoints = Point.removeIrelevent(shapePoints, departure, destination);
       //print ('points count after removing is ${decodedPoints.length}');
-    _SittingInfo sittingInfo = _finalPosition(decodedPoints);
+    _SittingInfo sittingInfo = _finalPosition(dateTime, decodedPoints);
 
     List<Point> points = sittingInfo.points!;
     List<double> segments = [];
@@ -253,6 +254,6 @@ class SunBusiness {
       segments.add(milestone);
     }
     segments.add(1);
-    return SittingInfo(sittingInfo: sittingInfo, segments: segments);
+    return Future(() => SittingInfo(sittingInfo: sittingInfo, segments: segments));
   }
 }

@@ -38,7 +38,7 @@ class LinesSearch extends StatelessWidget {
                     horizontal: 10), // Optional: Adjust text padding
               ),
               style: const TextStyle(
-                  color: Colors.white), // Optional: Adjust text color
+                  color: Colors.black), // Optional: Adjust text color
             ),
           ),
         ],

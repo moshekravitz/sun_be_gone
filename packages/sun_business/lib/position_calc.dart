@@ -105,11 +105,14 @@ class Point {
       List<Point> points, Point departure, Point destination) {
     int startIndex = closestPoint(points, departure);
     int endIndex = closestPoint(points, destination);
+    print('departure: ${departure.toString()}');
+    print('first point: ${points[startIndex].toString()}');
+    print('start index: $startIndex, end index: $endIndex');
     List<Point> newPoints = [];
     for (int i = startIndex; i < endIndex; i++) {
       newPoints.add(points[i]);
     }
-    return points;
+    return newPoints;
   }
 }
 

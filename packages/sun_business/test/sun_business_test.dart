@@ -9,7 +9,7 @@ void main() {
     final Point destination = Point(31.790348, 35.197526);
     final SunBusiness api = SunBusiness();
 
-    api.whereToSit(polyline, departure, destination);
+    api.whereToSit(polyline, departure, destination, DateTime.now());
 
     //expect(calculator.addOne(2), 3);
   });
