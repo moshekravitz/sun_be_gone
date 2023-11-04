@@ -19,48 +19,56 @@ enum Errors {
 
 @immutable
 class AppState {
-  final NavIndex navIndex;
-  final bool isLoading;
-  final bool isInitialized;
+  const AppState();
+}
 
-  const AppState({
-    required this.isLoading,
+class InitState extends AppState {
+  final bool isInitialized;
+  const InitState({
     required this.isInitialized,
+  });
+}
+
+class RoutesReadyState extends AppState {
+  final Iterable<BusRoutes> routes;
+  const RoutesReadyState({
+    required this.routes,
+  });
+}
+
+/*class NavState extends AppState {
+  final NavIndex navIndex;
+  const NavState({
     required this.navIndex,
+  });
+}*/
+
+class IsLoadingState extends AppState {
+  const IsLoadingState();
+}
+
+class ErrorState extends AppState {
+  final Errors error;
+  const ErrorState({
+    required this.error,
   });
 }
 
 @immutable
 class DataState extends AppState {
   final RouteQuaryInfo? quaryInfo;
-  final Errors? error;
 
   const DataState({
-    required super.navIndex,
-    required super.isLoading,
-    required super.isInitialized,
     this.quaryInfo,
-    this.error,
   });
-
-  DataState.init()
-      : this(
-            quaryInfo: null,
-            navIndex: NavIndex(Pages.home),
-            isLoading: false,
-            isInitialized: false);
 }
 
 class StopPickerState extends DataState {
   final bool isStopPickerDialogOpen;
 
   const StopPickerState({
-    required super.navIndex,
-    required super.isLoading,
-    required super.isInitialized,
     required super.quaryInfo,
     required this.isStopPickerDialogOpen,
-    super.error,
   });
 }
 
@@ -69,27 +77,38 @@ class ResultsState extends DataState {
   final SittingInfo? sittingInfo;
 
   const ResultsState({
-    required super.navIndex,
-    required super.isLoading,
-    required super.isInitialized,
     required super.quaryInfo,
     required this.hasResults,
     this.sittingInfo,
-    super.error,
   });
 }
 
-class BookmarksState extends DataState {
-  final Iterable<BusRoutes> historyRoutes;
-  final Iterable<BusRoutes> bookmarksRoutes;
-
+class BookmarksState extends AppState {
+  final List<BusRoutes> favoriteRoutes;
+  final List<BusRoutes> hisrotyRoutes;
   const BookmarksState({
-    required super.navIndex,
-    required super.isLoading,
-    required super.isInitialized,
-    required super.quaryInfo,
-    required this.historyRoutes,
-    required this.bookmarksRoutes,
-    super.error,
+    required this.favoriteRoutes,
+    required this.hisrotyRoutes,
+  });
+}
+
+class AddedFavoriteState extends AppState {
+  final BusRoutes busRoute;
+  const AddedFavoriteState({
+    required this.busRoute,
+  });
+}
+
+class AddedHistoryRouteState extends AppState {
+  final BusRoutes busRoute;
+  const AddedHistoryRouteState({
+    required this.busRoute,
+  });
+}
+
+class RemovedFavoriteState extends AppState {
+  final BusRoutes busRoute;
+  const RemovedFavoriteState({
+    required this.busRoute,
   });
 }

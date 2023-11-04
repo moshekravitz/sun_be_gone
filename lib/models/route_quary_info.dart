@@ -16,20 +16,20 @@ class StopQuaryInfo {
     required this.stopInterval,
   });
 
-  static Iterable<StopQuaryInfo> createStopQuaryInfo(Iterable<StopInfo> stopInfo, Iterable<StopTime> stopTimes) {
-      List <StopQuaryInfo> stopQuaryInfo = [];
-      for(int i = 0; i < stopInfo.length; i++) {
-        stopQuaryInfo.add(StopQuaryInfo(
-          stopId: stopInfo.elementAt(i).stopId,
-          stopName: stopInfo.elementAt(i).stopName,
-          stopLat: stopInfo.elementAt(i).stopLat,
-          stopLon: stopInfo.elementAt(i).stopLon,
-          stopInterval: stopTimes.elementAt(i).stopInterval,
-        ));
-      }
-      return stopQuaryInfo;
+  static Iterable<StopQuaryInfo> createStopQuaryInfo(
+      Iterable<StopInfo> stopInfo, Iterable<StopTime> stopTimes) {
+    List<StopQuaryInfo> stopQuaryInfo = [];
+    for (int i = 0; i < stopInfo.length; i++) {
+      stopQuaryInfo.add(StopQuaryInfo(
+        stopId: stopInfo.elementAt(i).stopId,
+        stopName: stopInfo.elementAt(i).stopName,
+        stopLat: stopInfo.elementAt(i).stopLat,
+        stopLon: stopInfo.elementAt(i).stopLon,
+        stopInterval: stopTimes.elementAt(i).stopInterval,
+      ));
+    }
+    return stopQuaryInfo;
   }
-
 }
 
 class RouteQuaryInfo {
@@ -49,15 +49,33 @@ class RouteQuaryInfo {
     required this.dateTime,
   });
 
+  RouteQuaryInfo.empty() {
+    routeId = null;
+    routeHeadSign = null;
+    shapeStr = null;
+    stopQuaryInfo = null;
+    fullStopQuaryInfo = null;
+    dateTime = null;
+  }
+
   @override
   String toString() {
     return 'RouteQuaryInfo{routeId: $routeId, routeHeadSign: $routeHeadSign, shapeStr: $shapeStr, stopQuaryInfo: $stopQuaryInfo, fullStopQuaryInfo: $fullStopQuaryInfo, currentTime: $dateTime}';
   }
 
   bool quaryInfoIsReady() {
-    return (shapeStr != null &&
-        stopQuaryInfo != null &&
-        dateTime != null);
+    return (shapeStr != null && stopQuaryInfo != null && dateTime != null);
+  }
+
+  RouteQuaryInfo copyWithObj({required RouteQuaryInfo quaryInfo}) {
+    return RouteQuaryInfo(
+      routeId: quaryInfo.routeId ?? this.routeId,
+      routeHeadSign: quaryInfo.routeHeadSign ?? this.routeHeadSign,
+      shapeStr: quaryInfo.shapeStr ?? this.shapeStr,
+      stopQuaryInfo: quaryInfo.stopQuaryInfo ?? this.stopQuaryInfo,
+      fullStopQuaryInfo: quaryInfo.fullStopQuaryInfo ?? this.fullStopQuaryInfo,
+      dateTime: quaryInfo.dateTime ?? this.dateTime,
+    );
   }
 
   // copy with

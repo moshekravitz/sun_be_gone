@@ -9,10 +9,14 @@ class AppCache {
   factory AppCache.instance() => _shared;
 
   Iterable<BusRoutes>? _busRoutes;
+  Iterable<BusRoutes>? _historyBusRoutes;
+  Iterable<BusRoutes>? _bookmarksBusRoutes;
 
   //check if _busRoutes is initialized
 
   Iterable<BusRoutes>? get busRoutes => _busRoutes;
+  //Iterable<BusRoutes>? get historyBusRoutes => _historyBusRoutes;
+  //Iterable<BusRoutes>? get bookmarksBusRoutes => _bookmarksBusRoutes;
 
   set busRoutes(Iterable<BusRoutes>? value) {
       if(_busRoutes != null) {
@@ -21,6 +25,24 @@ class AppCache {
           
     _busRoutes = value;
   }
+
+/*
+  set historyBusRoutes(Iterable<BusRoutes>? value) {
+      if(_historyBusRoutes != null) {
+          print("Warning: historyBusRoutes is already initialized");
+      }
+          
+    _historyBusRoutes = value;
+  }
+
+  set bookmarksBusRoutes(Iterable<BusRoutes>? value) {
+      if(_bookmarksBusRoutes != null) {
+          print("Warning: bookmarksBusRoutes is already initialized");
+      }
+          
+    _bookmarksBusRoutes = value;
+  }
+  */
 
   void clear() {
       _busRoutes = null;

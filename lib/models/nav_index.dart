@@ -1,5 +1,6 @@
 
 enum Pages {
+    notFound,
     home,
     bookmarks,
     search,
@@ -9,7 +10,7 @@ enum Pages {
 class NavIndex {
     final Pages pageIndex;
 
-    NavIndex(this.pageIndex);
+    const NavIndex(this.pageIndex);
 
     int get index => pageIndex.index;
     String get name => pageIndex.toString();

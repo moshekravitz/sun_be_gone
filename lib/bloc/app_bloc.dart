@@ -28,112 +28,112 @@ class AppBloc extends Bloc<AppAction, AppState> {
     required this.busShapeApi,
     required this.resultsApi,
     required this.serverConnectionApi,
-  }) : super(DataState.init()) {
+  }) : super(const InitState(isInitialized: false)) {
     on<InitAppAction>((event, emit) async {
       print('on InitAppAction');
-      String checkLive = await serverConnectionApi.checkLive();
-      if (checkLive != 'Healthy') {
-        emit(DataState(
-          isInitialized: true,
-          isLoading: false,
-          navIndex: NavIndex(Pages.home),
-          error: Errors.serverDown,
+      //emit(const IsLoadingState());
+      //print('emitted IsLoadingState');
+      final routesResponse;
+      try {
+        String checkLive = await serverConnectionApi.checkLive();
+        if (checkLive != 'Healthy') {
+          emit(const ErrorState(error: Errors.serverDown));
+        }
+
+        String checkHealth = await serverConnectionApi.checkHealth();
+        if (checkHealth != 'Healthy') {
+          emit(const ErrorState(
+            error: Errors.serverDown,
+          ));
+        }
+
+        routesResponse = await busRoutesApi.getBusRoutes();
+        AppCache.instance().busRoutes = routesResponse.data;
+      } catch (e) {
+        print('routes api gave an error');
+        emit(const ErrorState(
+          error: Errors.noRoutes,
         ));
+        return;
       }
-      String checkHealth = await serverConnectionApi.checkHealth();
-      if (checkHealth != 'Healthy') {
-        emit(DataState(
-          isInitialized: false,
-          isLoading: false,
-          navIndex: NavIndex(Pages.home),
-          error: Errors.serverDown,
+      if (routesResponse.data == null) {
+        print('routes api gave an error');
+        emit(const ErrorState(
+          error: Errors.noRoutes,
         ));
+        return;
       }
 
-      emit(DataState(
-        isInitialized: true,
-        isLoading: false,
-        navIndex: NavIndex(Pages.home),
-      ));
+      emit(const InitState(isInitialized: true));
     });
 
-    on<NavigationAction>((event, emit) {
-      print('on NavigationAction');
-      emit(AppState(
-        isInitialized: state.isInitialized,
-        isLoading: false,
-        navIndex: NavIndex(event.pageIndex),
+    on<GetRoutesAction>((event, emit) async {
+      print('on GetRoutesAction');
+
+      emit(const IsLoadingState());
+      if (AppCache.instance().busRoutes != null) {
+        emit(RoutesReadyState(
+          routes: AppCache.instance().busRoutes!,
+        ));
+        return;
+      }
+
+      final routesResponse;
+      try {
+        routesResponse = await busRoutesApi.getBusRoutes();
+        AppCache.instance().busRoutes = routesResponse.data;
+      } catch (e) {
+        print('routes api gave an error');
+        emit(const ErrorState(
+          error: Errors.noRoutes,
+        ));
+        return;
+      }
+      if (routesResponse.data == null) {
+        print('routes api gave an error');
+        emit(const ErrorState(
+          error: Errors.noRoutes,
+        ));
+        return;
+      }
+
+      emit(RoutesReadyState(
+        routes: routesResponse.data!,
       ));
     });
 
     on<GetStopsAction>((event, emit) async {
       print('on GetStopsAction');
-      if (state is! DataState) {
-        print('appstate is DataState:${state is DataState}');
-        print('the state is not DataState in GetExtendedRouteAction');
-        emit(DataState(
-          isInitialized: state.isInitialized,
-          isLoading: false,
-          navIndex: state.navIndex,
-          quaryInfo: null,
-        ));
-      } else {
-        print('1 dateTime: ${(state as DataState).quaryInfo?.dateTime}');
-        emit(DataState(
-          isInitialized: state.isInitialized,
-          isLoading: true,
-          navIndex: state.navIndex,
-          quaryInfo: (state as DataState).quaryInfo,
-        ));
-        print('2 dateTime: ${(state as DataState).quaryInfo?.dateTime}');
-      }
 
-      final dataState = state as DataState;
+      emit(const IsLoadingState());
 
       final extendedRoutesResponse =
           await extendedRoutesApi.getExtendedRoutes(event.routeId);
       if (extendedRoutesResponse.data == null) {
         print('extendedRoutes api gave an error');
-        emit(DataState(
-          isInitialized: state.isInitialized,
-          isLoading: false,
-          navIndex: state.navIndex,
-          quaryInfo: dataState.quaryInfo,
+        emit(const ErrorState(
           error: Errors.noExtendedRoutes,
         ));
-        print('3 dateTime: ${(state as DataState).quaryInfo?.dateTime}');
         return;
       }
       final stopsResponse =
           await busStopsApi.getBusStops(extendedRoutesResponse.data!);
       if (stopsResponse.data == null) {
         print('stops api gave an error');
-        emit(DataState(
-          isInitialized: state.isInitialized,
-          isLoading: false,
-          navIndex: state.navIndex,
-          quaryInfo: dataState.quaryInfo,
+        emit(const ErrorState(
           error: Errors.noStops,
         ));
-        print('4 dateTime: ${(state as DataState).quaryInfo?.dateTime}');
         return;
       }
       final shapeResponse =
           await busShapeApi.getShapes(extendedRoutesResponse.data!.shapeId);
       if (shapeResponse.data == null) {
         print('shape api gave an error');
-        emit(DataState(
-          isInitialized: state.isInitialized,
-          isLoading: false,
-          navIndex: state.navIndex,
-          quaryInfo: dataState.quaryInfo,
+        emit(const ErrorState(
           error: Errors.noShape,
         ));
-        print('5 dateTime: ${(state as DataState).quaryInfo?.dateTime}');
         return;
       }
-
-      final dataState2 = state as DataState;
 
       Iterable<StopQuaryInfo> fullStopQuaryInfo =
           StopQuaryInfo.createStopQuaryInfo(
@@ -147,77 +147,27 @@ class AppBloc extends Bloc<AppAction, AppState> {
         shapeStr: shapeResponse.data!,
         fullStopQuaryInfo: fullStopQuaryInfo.toList(),
         stopQuaryInfo: null,
-        dateTime: dataState2.quaryInfo?.dateTime,
+        dateTime: event.dateTime,
       );
 
       emit(StopPickerState(
-        isInitialized: state.isInitialized,
-        isLoading: false,
-        navIndex: state.navIndex,
         quaryInfo: quaryInfo,
         isStopPickerDialogOpen: true,
       ));
     });
 
-    on<DateTimePickedAction>((event, emit) {
-      print("on DateTimePickedAction");
-
-      late final quaryInfo;
-      if (state is! DataState || (state as DataState).quaryInfo == null) {
-        quaryInfo = RouteQuaryInfo(
-          routeId: null,
-          routeHeadSign: null,
-          shapeStr: null,
-          fullStopQuaryInfo: null,
-          stopQuaryInfo: null,
-          dateTime: event.dateTime,
-        );
-      } else {
-        quaryInfo = (state as DataState).quaryInfo?.copyWith(
-              currentTime: event.dateTime,
-            );
-      }
-
-      emit(DataState(
-        isInitialized: state.isInitialized,
-        isLoading: false,
-        navIndex: state.navIndex,
-        quaryInfo: quaryInfo,
-      ));
-    });
-
     on<StopPickerClosedAction>((event, emit) async {
       print("on StopPickerClosedAction");
-      if (state is! DataState || state is! StopPickerState) {
-        print('stopPickerClosedAction state is not DataState');
-        emit(DataState(
-          isInitialized: state.isInitialized,
-          isLoading: false,
-          navIndex: state.navIndex,
-          quaryInfo: null,
-          error: Errors.error,
-        ));
-      } else {
-        print('dateTime: ${(state as DataState).quaryInfo?.dateTime}');
-      }
-      final dataState = state as DataState;
-      if (dataState.quaryInfo!.dateTime == null) {
+
+      if (event.quaryInfo.dateTime == null) {
         print('dateTime is null');
       } else {
         print('dateTime is not null');
       }
 
-      emit(StopPickerState(
-        isInitialized: state.isInitialized,
-        isLoading: true,
-        navIndex: state.navIndex,
-        quaryInfo: dataState.quaryInfo,
-        isStopPickerDialogOpen: false,
-      ));
+      emit(const IsLoadingState());
 
-      final dataState2 = state as DataState;
-
-      List stopsList = dataState.quaryInfo!.fullStopQuaryInfo!.toList();
+      List stopsList = event.quaryInfo.fullStopQuaryInfo!.toList();
       final Point firstStopPoint;
       final Point lastStopPoint;
 
@@ -246,15 +196,15 @@ class AppBloc extends Bloc<AppAction, AppState> {
       }
 
       late final DateTime dateTime;
-      if (dataState2.quaryInfo!.dateTime == null) {
+      if (event.quaryInfo.dateTime == null) {
         print('dateTime is null');
         dateTime = DateTime.now();
       } else {
-        dateTime = dataState.quaryInfo!.dateTime!;
+        dateTime = event.quaryInfo.dateTime!;
       }
 
       final resultsResponse = await resultsApi.getSittingResults(
-        dataState.quaryInfo!.shapeStr!,
+        event.quaryInfo.shapeStr!,
         firstStopPoint,
         lastStopPoint,
         dateTime,
@@ -262,21 +212,14 @@ class AppBloc extends Bloc<AppAction, AppState> {
 
       if (resultsResponse.data == null) {
         print('results api gave an error');
-        emit(DataState(
-          isInitialized: state.isInitialized,
-          isLoading: false,
-          navIndex: state.navIndex,
-          quaryInfo: dataState.quaryInfo,
+        emit(const ErrorState(
           error: Errors.noResults,
         ));
         return;
       }
 
       emit(ResultsState(
-        isInitialized: state.isInitialized,
-        isLoading: false,
-        navIndex: NavIndex(Pages.results),
-        quaryInfo: dataState2.quaryInfo,
+        quaryInfo: event.quaryInfo,
         hasResults: true,
         sittingInfo: resultsResponse.data,
       ));
@@ -284,67 +227,110 @@ class AppBloc extends Bloc<AppAction, AppState> {
 
     on<NoRouteFoundAction>((event, emit) {
       print("on NoRouteFoundAction");
-      if (state is! DataState) return;
-      final dataState = state as DataState;
 
-      emit(DataState(
-        isInitialized: state.isInitialized,
-        isLoading: false,
-        navIndex: state.navIndex,
-        quaryInfo: dataState.quaryInfo,
+      emit(const ErrorState(
         error: Errors.noRoutes,
       ));
     });
 
     on<NavigatedToBookmarksAction>((event, emit) async {
       print("on NavigatedToBookmarksAction");
-      emit(DataState(
-        isInitialized: state.isInitialized,
-        isLoading: true,
-        navIndex: state.navIndex,
-        quaryInfo: null,
-      ));
+      emit(const IsLoadingState());
+
       Iterable<BusRoutes>? busRoutes = AppCache.instance().busRoutes;
       if (busRoutes == null) {
         print('busRoutes is null in NavigatedToBookmarksAction');
-        emit(DataState(
-          isInitialized: state.isInitialized,
-          isLoading: false,
-          navIndex: state.navIndex,
-          quaryInfo: null,
+        emit(const ErrorState(
           error: Errors.noRoutes,
         ));
         return;
       }
       Iterable<int> historyRouteIds;
-      Iterable<int> bookmarkRouteIds;
+      Iterable<int> favoriteRouteIds;
+      List<BusRoutes>? historyRoutes;
+      List<BusRoutes>? bookmarkRoutes;
       try {
-        historyRouteIds =
+        favoriteRouteIds =
             (await AppData.getBookmarks()).map((e) => int.parse(e));
-        bookmarkRouteIds =
-            (await AppData.getHistory()).map((e) => int.parse(e));
+        historyRouteIds = (await AppData.getHistory()).map((e) => int.parse(e));
+        historyRoutes = busRoutes
+            .where((element) => historyRouteIds.contains(element.routeId))
+            .toList();
+        bookmarkRoutes = busRoutes
+            .where((element) => favoriteRouteIds.contains(element.routeId))
+            .toList();
+
+        //AppCache.instance().historyBusRoutes = historyRoutes.toList();
+        //AppCache.instance().bookmarksBusRoutes = bookmarkRoutes.toList();
       } catch (e) {
         print('error in NavigatedToBookmarksAction error: $e');
-        emit(DataState(
-          isInitialized: state.isInitialized,
-          isLoading: false,
-          navIndex: state.navIndex,
-          quaryInfo: null,
+        emit(const ErrorState(
           error: Errors.noRoutes,
         ));
         return;
       }
-      Iterable<BusRoutes>? historyRoutes = busRoutes.where((element) => historyRouteIds.contains(element.routeId));
-      Iterable<BusRoutes>? bookmarkRoutes = busRoutes.where((element) => bookmarkRouteIds.contains(element.routeId));
 
       emit(BookmarksState(
-        isInitialized: state.isInitialized,
-        isLoading: false,
-        navIndex: NavIndex(Pages.bookmarks),
-        quaryInfo: null,
-        historyRoutes: historyRoutes,
-        bookmarksRoutes: bookmarkRoutes,
+        hisrotyRoutes: historyRoutes,
+        favoriteRoutes: bookmarkRoutes,
       ));
+    });
+
+    on<AddRouteToFavoritsAction>((event, emit) async {
+      print("on AddToBookmarksAction");
+      emit(const IsLoadingState());
+
+      BusRoutes busRoute;
+      try {
+        await AppData.addBookmark(event.routeId);
+        busRoute = AppCache.instance().busRoutes!.firstWhere(
+            (element) => element.routeId.toString() == event.routeId);
+      } catch (e) {
+        print('error in AddToBookmarksAction error: $e');
+        emit(const ErrorState(
+          error: Errors.noRoutes,
+        ));
+        return;
+      }
+      emit(AddedFavoriteState(busRoute: busRoute));
+    });
+
+    on<AddRouteToHistoryAction>((event, emit) async {
+      print("on AddRouteToHistoryAction");
+      emit(const IsLoadingState());
+
+      BusRoutes busRoute;
+      try {
+        await AppData.addHistory(event.routeId);
+        busRoute = AppCache.instance().busRoutes!.firstWhere(
+            (element) => element.routeId.toString() == event.routeId);
+      } catch (e) {
+        print('error in AddRouteToHistoryAction error: $e');
+        emit(const ErrorState(
+          error: Errors.noRoutes,
+        ));
+        return;
+      }
+      emit(AddedHistoryRouteState(busRoute: busRoute));
+    });
+
+    on<RemoveRouteFromFavoritesAction>((event, emit) async {
+      print("on RemoveRouteFromFavoritesAction");
+      emit(const IsLoadingState());
+
+      BusRoutes busRoute;
+      try {
+        await AppData.removeBookmark(event.routeId);
+        busRoute = AppCache.instance().busRoutes!.firstWhere(
+            (element) => element.routeId.toString() == event.routeId);
+      } catch (e) {
+        print('error in RemoveRouteFromFavoritesAction error: $e');
+        emit(const ErrorState(
+          error: Errors.noRoutes,
+        ));
+        return;
+      }
+      emit(RemovedFavoriteState(busRoute: busRoute));
     });
   }
 }

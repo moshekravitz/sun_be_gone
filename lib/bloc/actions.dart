@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:sun_be_gone/models/bus_routes.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
+import 'package:sun_be_gone/models/route_quary_info.dart';
 
 @immutable
 abstract class AppAction {
@@ -20,8 +21,8 @@ class NavigationAction extends AppAction {
 }
 
 @immutable
-class GetRoutesAction extends NavigationAction {
-  const GetRoutesAction({required super.pageIndex});
+class GetRoutesAction extends AppAction{
+  const GetRoutesAction();
 }
 
 @immutable
@@ -39,7 +40,8 @@ class GetExtendedRouteAction extends AppAction {
 @immutable
 class GetStopsAction extends AppAction {
   final int routeId;
-  const GetStopsAction({required this.routeId});
+  final DateTime? dateTime;
+  const GetStopsAction({required this.routeId, this.dateTime});
 }
 
 class DateTimePickedAction extends AppAction {
@@ -49,9 +51,11 @@ class DateTimePickedAction extends AppAction {
 
 @immutable
 class StopPickerClosedAction extends AppAction {
+  final RouteQuaryInfo quaryInfo;
   final int departureIndex;
   final int destinationIndex;
   const StopPickerClosedAction({
+    required this.quaryInfo,
     required this.departureIndex,
     required this.destinationIndex,
   });
@@ -65,4 +69,28 @@ class NoRouteFoundAction extends AppAction {
 @immutable
 class NavigatedToBookmarksAction extends AppAction {
   const NavigatedToBookmarksAction();
+}
+
+@immutable
+class AddRouteToFavoritsAction extends AppAction {
+  final String routeId;
+  const AddRouteToFavoritsAction({required this.routeId});
+}
+
+@immutable
+class RemoveRouteFromFavoritesAction extends AppAction {
+  final String routeId;
+  const RemoveRouteFromFavoritesAction({required this.routeId});
+}
+
+@immutable
+class AddRouteToHistoryAction extends AppAction {
+  final String routeId;
+  const AddRouteToHistoryAction({required this.routeId});
+}
+
+@immutable
+class RemoveRouteFromHistoryAction extends AppAction {
+  final String routeId;
+  const RemoveRouteFromHistoryAction({required this.routeId});
 }

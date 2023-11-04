@@ -26,7 +26,7 @@ class FilterBusRoutesAction extends BusRoutesAction {
 @immutable
 class BusRoutesState {
   final Error? error;
-  final Iterable<BusRoutes?> busRoutes;
+  final Iterable<BusRoutes> busRoutes;
 
   const BusRoutesState({
     this.error,
@@ -45,7 +45,9 @@ class BusRotuesBloc extends Bloc<BusRoutesAction, BusRoutesState> {
   BusRotuesBloc({
     required this.busRoutesApi,
     required this.serverConnectionApi,
-  }) : super(BusRoutesState.init()) {
+  }) : super(BusRoutesState(
+          busRoutes: AppCache.instance().busRoutes ?? [],
+        )) {
     on<GetBusRoutesAction>((event, emit) async {
       print('BusRoutesAction get called');
       if (AppCache.instance().busRoutes != null) {
