@@ -125,6 +125,9 @@ class MainScreen extends StatelessWidget {
               stops: appState.quaryInfo!.fullStopQuaryInfo!,
               setDepartureIndex: (index) => departureIndex = index,
               setDestinationIndex: (index) => arrivalIndex = index,
+              onCancelButton: () {
+                StopPicker.instance().hide();
+              },
               onCloseButton: () {
                 //context.read<AppBloc>().add(const NavigationAction(pageIndex: Pages.home2));
                 StopPicker.instance().hide();
@@ -153,7 +156,7 @@ class MainScreen extends StatelessWidget {
         if (appState is AddedHistoryRouteState) {
           context.read<RoutesHistoryCubit>().addHistory(appState.busRoute);
         }
-        if(appState is RemovedFavoriteState){
+        if (appState is RemovedFavoriteState) {
           context.read<BookMarksCubit>().removeBookmark(appState.busRoute);
         }
       },

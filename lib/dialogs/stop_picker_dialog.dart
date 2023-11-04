@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:sun_be_gone/dialogs/stop_picker_dialog_controller.dart';
 import 'package:sun_be_gone/dialogs/stops_list_view.dart';
@@ -15,6 +14,7 @@ class StopPicker {
 
   late StopPickerController? _controller;
   late ButtonPressedCallback onCloseButton;
+  late ButtonPressedCallback onCancelButton;
   late Function(int) setDepartureIndex;
   late Function(int) setDestinationIndex;
 
@@ -24,6 +24,7 @@ class StopPicker {
     required BuildContext context,
     required Iterable<StopQuaryInfo> stops,
     required ButtonPressedCallback onCloseButton,
+    required ButtonPressedCallback onCancelButton,
     required Function(int) setDepartureIndex,
     required Function(int) setDestinationIndex,
   }) {
@@ -31,6 +32,7 @@ class StopPicker {
       context: context,
       stops: stops,
       onCloseButton: onCloseButton,
+      onCancelButton: onCancelButton,
       setDepartureIndex: setDepartureIndex,
       setDestinationIndex: setDestinationIndex,
     );
@@ -45,6 +47,7 @@ class StopPicker {
     required BuildContext context,
     required Iterable<StopQuaryInfo> stops,
     required ButtonPressedCallback onCloseButton,
+    required ButtonPressedCallback onCancelButton,
     required Function(int) setDepartureIndex,
     required Function(int) setDestinationIndex,
   }) {
@@ -85,8 +88,17 @@ class StopPicker {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
+                          onPressed: onCancelButton,
+                          child: const Text('Cancel'),
+                        ),
+                        const SizedBox(width: 5),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                          ),
                           onPressed: onCloseButton,
-                          child: const Text('Close'),
+                          child: const Text('Go'),
                         ),
                       ],
                     ),
