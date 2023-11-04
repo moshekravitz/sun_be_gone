@@ -13,7 +13,7 @@ class NavIndex {
     const NavIndex(this.pageIndex);
 
     int get index => pageIndex.index;
-    String get name => pageIndex.toString();
+    String get name => pageIndex.toString().split('.').last;
 
     @override
     bool operator ==(Object other) =>
