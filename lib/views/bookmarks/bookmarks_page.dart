@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_be_gone/bloc/bookmarks_bloc.dart';
 import 'package:sun_be_gone/bloc/date_time_cubit.dart';
-import 'package:sun_be_gone/data/app_cache.dart';
-import 'package:sun_be_gone/data/persistent_data.dart';
 import 'package:sun_be_gone/models/bus_routes.dart';
-import 'package:sun_be_gone/views/search/routes_list_view.dart';
+import 'package:sun_be_gone/widgets/routes_list_view.dart';
 import 'package:sun_be_gone/widgets/build_date_time.dart';
 
 class BookmarksPage extends StatelessWidget {

@@ -6,13 +6,13 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 100,
           ),
           /*Image.asset(
@@ -20,17 +20,22 @@ class SplashScreen extends StatelessWidget {
               height: 200,
               width: 200,
             ),*/
-          Icon(
+          const Icon(
             Icons.directions_bus,
             color: Colors.green,
+            size: 150.0,
+          ),
+          const SizedBox(
+            height: 30,
           ),
           SizedBox(
-            height: 10,
+            width: 200,
+            child: LinearProgressIndicator(
+              borderRadius: BorderRadius.circular(20.0),
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+            ),
           ),
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-          ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
         ],

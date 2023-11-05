@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:sun_be_gone/bloc/bookmarks_bloc.dart';
-import 'package:sun_be_gone/data/persistent_data.dart';
-import 'package:sun_be_gone/dialogs/stop_picker_dialog.dart';
 import 'package:sun_be_gone/models/bus_routes.dart';
 
 typedef OnStopPicked = void Function();
@@ -57,3 +54,4 @@ class RoutesListView extends StatelessWidget {
     );
   }
 }
+
