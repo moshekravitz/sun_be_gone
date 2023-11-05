@@ -74,6 +74,7 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AppBloc, AppState>(
       listener: (context, appState) {
+        print('app stata: $appState');
         if (appState is ErrorState) {
           showGenericDialog<bool>(
             context: context,
@@ -84,11 +85,13 @@ class MainScreen extends StatelessWidget {
         }
 
         if (appState is IsLoadingState) {
+          print('is loading state');
           LoadingScreen.instance().show(
             context: context,
             text: 'please wait',
           );
         } else {
+          print('is not loading state');
           LoadingScreen.instance().hide();
         }
 
@@ -161,4 +164,3 @@ class MainScreen extends StatelessWidget {
     );
   }
 }
-

@@ -60,10 +60,10 @@ class MainApp extends StatelessWidget {
                             .read<AppBloc>()
                             .add(AddRouteToFavoritsAction(routeId: value)),
                         onRoutePicked: (value, dateTime) {
-                          context.read<AppBloc>().add(AddRouteToHistoryAction(
-                              routeId: value.toString()));
                           context.read<AppBloc>().add(GetStopsAction(
                               routeId: value, dateTime: dateTime));
+                          //context.read<AppBloc>().add(AddRouteToHistoryAction(
+                           //   routeId: value.toString()));
                         },
                       ),
                     Pages.results => LoadingResult(

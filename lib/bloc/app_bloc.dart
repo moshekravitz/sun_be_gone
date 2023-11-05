@@ -71,6 +71,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
       print('on GetRoutesAction');
 
       emit(const IsLoadingState());
+      print('started loading in GetRoutesAction');
       if (AppCache.instance().busRoutes != null) {
         emit(RoutesReadyState(
           routes: AppCache.instance().busRoutes!,
@@ -106,6 +107,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
       print('on GetStopsAction');
 
       emit(const IsLoadingState());
+      print('started loading in GetStopsAction');
 
       final extendedRoutesResponse =
           await extendedRoutesApi.getExtendedRoutes(event.routeId);
@@ -154,6 +156,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
         quaryInfo: quaryInfo,
         isStopPickerDialogOpen: true,
       ));
+      print('finished loading in GetStopsAction');
     });
 
     on<StopPickerClosedAction>((event, emit) async {
@@ -217,6 +220,20 @@ class AppBloc extends Bloc<AppAction, AppState> {
         ));
         return;
       }
+
+      BusRoutes busRoute;
+      try {
+        await AppData.addHistory(event.quaryInfo.routeId.toString());
+        busRoute = AppCache.instance().busRoutes!.firstWhere(
+            (element) => element.routeId == event.quaryInfo.routeId);
+      } catch (e) {
+        print('error in AddRouteToHistoryAction error: $e');
+        emit(const ErrorState(
+          error: Errors.noRoutes,
+        ));
+        return;
+      }
+      emit(AddedHistoryRouteState(busRoute: busRoute));
 
       emit(ResultsState(
         quaryInfo: event.quaryInfo,
@@ -293,25 +310,6 @@ class AppBloc extends Bloc<AppAction, AppState> {
         return;
       }
       emit(AddedFavoriteState(busRoute: busRoute));
-    });
-
-    on<AddRouteToHistoryAction>((event, emit) async {
-      print("on AddRouteToHistoryAction");
-      emit(const IsLoadingState());
-
-      BusRoutes busRoute;
-      try {
-        await AppData.addHistory(event.routeId);
-        busRoute = AppCache.instance().busRoutes!.firstWhere(
-            (element) => element.routeId.toString() == event.routeId);
-      } catch (e) {
-        print('error in AddRouteToHistoryAction error: $e');
-        emit(const ErrorState(
-          error: Errors.noRoutes,
-        ));
-        return;
-      }
-      emit(AddedHistoryRouteState(busRoute: busRoute));
     });
 
     on<RemoveRouteFromFavoritesAction>((event, emit) async {
