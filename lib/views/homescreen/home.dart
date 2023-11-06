@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sun_be_gone/models/bus_routes.dart';
 import 'package:sun_be_gone/views/homescreen/enter_search.dart';
-import 'package:sun_be_gone/views/search/routes_list_view.dart';
 
 class Home extends StatelessWidget {
   final OnSearchTapped onSearchTapped;
@@ -58,6 +56,8 @@ class Home extends StatelessWidget {
 }
 
 class Home2 extends StatelessWidget {
+  const Home2({super.key});
+
 
   @override
   Widget build(BuildContext context) {

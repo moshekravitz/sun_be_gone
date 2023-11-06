@@ -14,7 +14,6 @@ class BusRoutes {
     required this.routeShortName,
     required this.routeLongName,
   }) {
-
     routeDeparture = routeLongName.substring(
       1,
       routeLongName.indexOf('<'),
@@ -37,6 +36,23 @@ class BusRoutes {
       routeShortName: json['routeShortName'] as String,
       routeLongName: json['routeLongName'] as String,
     );
+  }
+  String prettyString() {
+    List<String> strs = routeLongName.split('-');
+
+    String departureStation = strs[0].replaceAll(RegExp(r'\s+'), ' ');
+    String departureCity = strs[1].replaceAll('<', '').replaceAll(RegExp(r'\s+'), ' ');
+    String destinationStation = strs[2].substring(1).replaceAll(RegExp(r'\s+'), ' ');
+    String destinationCity = strs[3].replaceAll(RegExp(r'\s+'), ' ');
+
+    //String arrowIcon = '\u27F5';
+    String arrowIcon = '\u2190';
+
+    if (departureCity == destinationCity) {
+      return '$departureStation $arrowIcon $destinationStation';
+    } else {
+      return '$departureCity $arrowIcon $destinationCity';
+    }
   }
 }
 

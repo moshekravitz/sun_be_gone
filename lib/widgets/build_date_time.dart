@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 class DateTimePickerButton extends StatelessWidget {
   final DateTime dateTime;
   final Function(DateTime) onConfirm;
 
-  const DateTimePickerButton({super.key, required this.dateTime, required this.onConfirm});
+  const DateTimePickerButton(
+      {super.key, required this.dateTime, required this.onConfirm});
 
   @override
   Widget build(BuildContext context) {
-  //Widget buildTimePicker(Function(DateTime) onConfirm, DateTime dateTime) {
+    //Widget buildTimePicker(Function(DateTime) onConfirm, DateTime dateTime) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
@@ -28,14 +30,14 @@ class DateTimePickerButton extends StatelessWidget {
     );
   }
 
-
   Widget buildTimePicker(DateTime dateTime) {
     print('building date time');
     if (dateTime.day == DateTime.now().day) {
       return Row(
         children: [
           Text(
-            'Departure at ${dateTime.hour}:${dateTime.minute} ',
+            //'Departure at ${dateTime.hour}:${dateTime.minute} ',
+            'Departure at ${DateFormat.Hm().format(dateTime)}',
           ),
           const Icon(
             Icons.arrow_drop_down,
@@ -44,7 +46,8 @@ class DateTimePickerButton extends StatelessWidget {
       );
     } else {
       return Text(
-        'Departure at ${dateTime.day}/${dateTime.month}, ${dateTime.hour}:${dateTime.minute} ',
+        //'Departure at ${dateTime.day}/${dateTime.month}, ${dateTime.hour}:${dateTime.minute} ',
+        'Departure at ${DateFormat.MMMMd().add_Hm().format(dateTime)} ',
       );
     }
   }
