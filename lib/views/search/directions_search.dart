@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
 
 typedef OnDepartureEditingComplete = void Function(String? text);
-typedef OnDirectionEditingComplete = void Function(String? text);
+typedef OnDirectionEditingComplete = void Function(String? , String?);
 
-class DirectoinsSearch extends StatelessWidget {
+class DirectoinsSearch extends StatefulWidget {
   DirectoinsSearch({
     super.key,
     required this.onDirectionEditingComplete,
@@ -14,8 +14,28 @@ class DirectoinsSearch extends StatelessWidget {
 
   final OnDirectionEditingComplete onDirectionEditingComplete;
   final OnDepartureEditingComplete onDepartureEditingComplete;
+
+  @override
+  State<DirectoinsSearch> createState() => _DirectoinsSearchState();
+}
+
+class _DirectoinsSearchState extends State<DirectoinsSearch> {
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _controller2 = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() => widget.onDepartureEditingComplete(_controller.text));
+    _controller2.addListener(() => widget.onDirectionEditingComplete(_controller.text, _controller2.text));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _controller2.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +72,7 @@ class DirectoinsSearch extends StatelessWidget {
               ),
               child: TextField(
                 controller: _controller,
-                onChanged: onDepartureEditingComplete,
+                //onChanged: widget.onDepartureEditingComplete,
                 decoration: const InputDecoration(
                   border: InputBorder.none, // Remove the default border
                   hintText: 'Departure',
@@ -77,7 +97,7 @@ class DirectoinsSearch extends StatelessWidget {
               child: TextField(
                 controller: _controller2,
                 textInputAction: TextInputAction.go,
-                onChanged: onDirectionEditingComplete,
+                //onChanged: widget.onDirectionEditingComplete,
                 decoration: const InputDecoration(
                   border: InputBorder.none, // Remove the default border
                   hintText: 'destination',

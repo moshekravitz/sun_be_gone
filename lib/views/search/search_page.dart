@@ -10,13 +10,10 @@ import 'package:sun_be_gone/widgets/routes_list_view.dart';
 import 'package:sun_be_gone/widgets/build_date_time.dart';
 
 class SearchPage extends StatefulWidget {
-  String? selectedDeparture;
-  String? selectedDestination;
-  String? selectedLine;
-  OnRoutePicked onRoutePicked;
+  final OnRoutePicked onRoutePicked;
   final Function(String) onSlidePressed;
   //Iterable<BusRoutes?>? routes;
-  SearchPage({
+  const SearchPage({
     super.key,
     required this.onRoutePicked,
     required this.onSlidePressed,
@@ -157,10 +154,11 @@ class _SearchPageState extends State<SearchPage> {
           FilterBusRoutesAction(
               filterFunction: (route) =>
                   route!.routeDeparture!.contains(value!))),
-      onDirectionEditingComplete: (value) => context.read<BusRotuesBloc>().add(
-          FilterBusRoutesAction(
-              filterFunction: (route) =>
-                  route!.routeDestination!.contains(value!))),
+      onDirectionEditingComplete: (depInput, destInput ) =>
+          context.read<BusRotuesBloc>().add(FilterBusRoutesAction(
+                filterFunction: (route) =>
+                    route!.routeDeparture!.contains(depInput!) && route.routeDestination!.contains(destInput!),
+              )),
     );
   }
 

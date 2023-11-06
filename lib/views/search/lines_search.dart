@@ -4,15 +4,32 @@ import 'package:sun_be_gone/models/nav_index.dart';
 
 typedef OnSubmittedLine = void Function(String? value);
 
-class LinesSearch extends StatelessWidget {
-  const LinesSearch({super.key,required this.onSubmittedLine});
+class LinesSearch extends StatefulWidget {
+  LinesSearch({super.key, required this.onSubmittedLine});
 
   final OnSubmittedLine onSubmittedLine;
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController _controller = TextEditingController();
+  State<LinesSearch> createState() => _LinesSearchState();
+}
 
+class _LinesSearchState extends State<LinesSearch> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() => widget.onSubmittedLine(_controller.text));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
       child: Column(
@@ -30,7 +47,6 @@ class LinesSearch extends StatelessWidget {
             child: TextField(
               controller: _controller,
               textInputAction: TextInputAction.go,
-              onChanged: onSubmittedLine,
               decoration: const InputDecoration(
                 border: InputBorder.none, // Remove the default border
                 hintText: 'line numbe',
