@@ -28,75 +28,83 @@ class MainApp extends StatelessWidget {
             print('init state Not init');
             context.read<AppBloc>().add(const InitAppAction());
           }
-          return navIndex.pageIndex == Pages.notFound
+          return navIndex.pageIndex == Pages.entry
               ? const SplashScreen()
-              : Scaffold(
-                  appBar: AppBar(
-                    title: Center(
-                      //child: Text(pagesNames[navIndex.index]),
-                      child: Text(navIndex.name),
-                    ),
-                  ),
-                  body: switch (navIndex.pageIndex) {
-                    Pages.home => Home(
-                        onSearchTapped: () => context
-                            .read<AppBloc>()
-                            .add(const GetRoutesAction())),
-                    Pages.bookmarks => BookmarksPage(
-                        onSlidePressedRemoveFav: (value) => context
-                            .read<AppBloc>()
-                            .add(
-                                RemoveRouteFromFavoritesAction(routeId: value)),
-                        onSlidePressedAddFav: (value) => context
-                            .read<AppBloc>()
-                            .add(AddRouteToFavoritsAction(routeId: value)),
-                        onRoutePicked: (value, dateTime) => context
-                            .read<AppBloc>()
-                            .add(GetStopsAction(
-                                routeId: value, dateTime: dateTime)),
+              : navIndex.pageIndex == Pages.error
+                  ? const Scaffold(
+                      body: Center(
+                        child: Text('Error'),
                       ),
-                    Pages.search => SearchPage(
-                        onSlidePressed: (value) => context
-                            .read<AppBloc>()
-                            .add(AddRouteToFavoritsAction(routeId: value)),
-                        onRoutePicked: (value, dateTime) {
-                          context.read<AppBloc>().add(GetStopsAction(
-                              routeId: value, dateTime: dateTime));
-                          //context.read<AppBloc>().add(AddRouteToHistoryAction(
-                           //   routeId: value.toString()));
-                        },
-                      ),
-                    Pages.results => LoadingResult(
-                        sittingInfo: (appState as ResultsState).sittingInfo!),
-                    (_) => Scaffold(
-                        body: Center(
-                          child: Text(
-                              'No route defined for ${navIndex.pageIndex.name}'),
+                    )
+                  : Scaffold(
+                      appBar: AppBar(
+                        title: Center(
+                          //child: Text(pagesNames[navIndex.index]),
+                          child: Text(navIndex.name),
                         ),
                       ),
-                  },
-                  bottomNavigationBar: BottomNavBar(
-                      index: switch (navIndex.pageIndex) {
-                        Pages.notFound => 0,
-                        Pages.home => 0,
-                        Pages.bookmarks => 1,
-                        Pages.search => 0,
-                        Pages.results => 0,
+                      body: switch (navIndex.pageIndex) {
+                        Pages.home => Home(
+                            onSearchTapped: () => context
+                                .read<AppBloc>()
+                                .add(const GetRoutesAction())),
+                        Pages.bookmarks => BookmarksPage(
+                            onSlidePressedRemoveFav: (value) => context
+                                .read<AppBloc>()
+                                .add(RemoveRouteFromFavoritesAction(
+                                    routeId: value)),
+                            onSlidePressedAddFav: (value) => context
+                                .read<AppBloc>()
+                                .add(AddRouteToFavoritsAction(routeId: value)),
+                            onRoutePicked: (value, dateTime) => context
+                                .read<AppBloc>()
+                                .add(GetStopsAction(
+                                    routeId: value, dateTime: dateTime)),
+                          ),
+                        Pages.search => SearchPage(
+                            onSlidePressed: (value) => context
+                                .read<AppBloc>()
+                                .add(AddRouteToFavoritsAction(routeId: value)),
+                            onRoutePicked: (value, dateTime) {
+                              context.read<AppBloc>().add(GetStopsAction(
+                                  routeId: value, dateTime: dateTime));
+                              //context.read<AppBloc>().add(AddRouteToHistoryAction(
+                              //   routeId: value.toString()));
+                            },
+                          ),
+                        Pages.results => LoadingResult(
+                            sittingInfo:
+                                (appState as ResultsState).sittingInfo!),
+                        (_) => Scaffold(
+                            body: Center(
+                              child: Text(
+                                  'No route defined for ${navIndex.pageIndex.name}'),
+                            ),
+                          ),
                       },
-                      onBottomNavBarTap: (index) {
-                        if (index == 0) {
-                          context
-                              .read<NavIndexCubit>()
-                              .setIndex(const NavIndex(Pages.home));
-                        }
+                      bottomNavigationBar: BottomNavBar(
+                          index: switch (navIndex.pageIndex) {
+                            Pages.entry => 0,
+                            Pages.home => 0,
+                            Pages.bookmarks => 1,
+                            Pages.search => 0,
+                            Pages.results => 0,
+                            Pages.error => 0,
+                          },
+                          onBottomNavBarTap: (index) {
+                            if (index == 0) {
+                              context
+                                  .read<NavIndexCubit>()
+                                  .setIndex(const NavIndex(Pages.home));
+                            }
 
-                        if (index == 1) {
-                          context
-                              .read<AppBloc>()
-                              .add(const NavigatedToBookmarksAction());
-                        }
-                      }),
-                );
+                            if (index == 1) {
+                              context
+                                  .read<AppBloc>()
+                                  .add(const NavigatedToBookmarksAction());
+                            }
+                          }),
+                    );
         });
   }
 }

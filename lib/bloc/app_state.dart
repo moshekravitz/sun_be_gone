@@ -1,21 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:sun_be_gone/models/bus_routes.dart';
-import 'package:sun_be_gone/models/extended_routes.dart';
-import 'package:sun_be_gone/models/nav_index.dart';
+import 'package:sun_be_gone/models/errors.dart';
 import 'package:sun_be_gone/models/route_quary_info.dart';
-import 'package:sun_be_gone/models/stop_info.dart';
-import 'package:sun_business/position_calc.dart' show Point;
 import 'package:sun_business/sun_business.dart' show SittingInfo;
-
-enum Errors {
-  error,
-  serverDown,
-  noResults,
-  noStops,
-  noRoutes,
-  noShape,
-  noExtendedRoutes,
-}
 
 @immutable
 class AppState {
@@ -35,13 +22,6 @@ class RoutesReadyState extends AppState {
     required this.routes,
   });
 }
-
-/*class NavState extends AppState {
-  final NavIndex navIndex;
-  const NavState({
-    required this.navIndex,
-  });
-}*/
 
 class IsLoadingState extends AppState {
   const IsLoadingState();

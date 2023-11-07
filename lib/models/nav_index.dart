@@ -1,6 +1,7 @@
 
 enum Pages {
-    notFound,
+    entry,
+    error,
     home,
     bookmarks,
     search,

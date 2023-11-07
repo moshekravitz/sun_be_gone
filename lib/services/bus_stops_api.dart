@@ -10,13 +10,15 @@ import 'package:sun_be_gone/services/http_url.dart';
 @immutable
 abstract class BusStopsApiProtocol {
   const BusStopsApiProtocol();
-  Future<ApiResponse<Iterable<StopInfo>?>> getBusStops(ExtendedRoutes extendedRoutes);
+  Future<ApiResponse<Iterable<StopInfo>?>> getBusStops(
+      ExtendedRoutes extendedRoutes);
 }
 
 @immutable
 class MockBusStopsApi implements BusStopsApiProtocol {
   @override
-  Future<ApiResponse<Iterable<StopInfo>?>> getBusStops(ExtendedRoutes extendedRoutes) //=>
+  Future<ApiResponse<Iterable<StopInfo>?>> getBusStops(
+      ExtendedRoutes extendedRoutes) //=>
   {
     print('mocking api request');
     return Future.delayed(
@@ -29,13 +31,14 @@ class MockBusStopsApi implements BusStopsApiProtocol {
 @immutable
 class BusStopsApi implements BusStopsApiProtocol {
   @override
-  Future<ApiResponse<Iterable<StopInfo>?>> getBusStops(ExtendedRoutes extendedRoutes) async {
+  Future<ApiResponse<Iterable<StopInfo>?>> getBusStops(
+      ExtendedRoutes extendedRoutes) async {
     List<int> stopIds = extendedRoutes.stopTimes.map((e) => e.stopId).toList();
     String stopIdsComaSeparated = stopIds.join(',');
     var headers = {'APIKEY': '1234'};
     var response = await http.get(
-      Uri.parse(
-          HttpUrl.serverUrl('/api/stopInfo/idList?stopIdL=$stopIdsComaSeparated')),
+      Uri.parse(HttpUrl.serverUrl(
+          '/api/stopInfo/idList?stopIdL=$stopIdsComaSeparated')),
       headers: headers,
     );
     //http.Request('GET', Uri.parse('http://localhost:5000/api/Routes'));
@@ -54,7 +57,15 @@ class BusStopsApi implements BusStopsApiProtocol {
     }
 
     Iterable<StopInfo>? stops = parseBusRoutes(response.body);
-    return ApiResponse<Iterable<StopInfo>?>(statusCode: response.statusCode, data: stops);
+    stops = stops.map((e) => StopInfo(
+          stopId: e.stopId,
+          stopName: e.stopName.replaceAll(RegExp(r'\s+'), ' '),
+          stopLat: e.stopLat,
+          stopLon: e.stopLon,
+        ));
+
+    return ApiResponse<Iterable<StopInfo>?>(
+        statusCode: response.statusCode, data: stops);
   }
 
   // A function that converts a response body into a List<BusRoutes>.

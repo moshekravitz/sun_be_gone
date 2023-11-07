@@ -72,8 +72,11 @@ class RoutesListView extends StatelessWidget {
                   ),
                 ],
               ),
-              onTap: () =>
-                  onRoutePicked(routes.elementAt(index)!.routeId, dateTime),
+              onTap: () {
+                print('onTap');
+                return onRoutePicked(
+                    routes.elementAt(index)!.routeId, dateTime);
+              },
             ),
             /*child: ListTile(
               title: Text(routes.elementAt(index)!.routeShortName),

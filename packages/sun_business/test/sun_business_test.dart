@@ -1,15 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sun_business/position_calc.dart' show Point;
+import 'package:sun_business/models/point.dart';
 
 import 'package:sun_business/sun_business.dart';
 
 void main() {
-  test('adds one to input values', () {
-    final Point departure = Point(31.702796, 34.965982);
-    final Point destination = Point(31.790348, 35.197526);
+  test('adds one to input values', () async {
+    final Point departure = Point(34.98973, 31.70847);
+    final Point destination = Point(35.16979, 31.79639);
     final SunBusiness api = SunBusiness();
 
-    api.whereToSit(polyline, departure, destination, DateTime.now());
+    DateTime midday = DateTime.now().add(const Duration(hours: 12));
+
+    var result =
+        await api.whereToSit(polyline, departure, destination, midday);
+
+    for(var segment in result.segments!) {
+      print('segment: ${segment}');
+    }
 
     //expect(calculator.addOne(2), 3);
   });

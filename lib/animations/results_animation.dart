@@ -1,8 +1,8 @@
 import 'dart:math' show pi;
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:sun_business/sun_business.dart' show SittingInfo, SittingPosition;
-
+import 'package:sun_be_gone/utils/result_animation_util.dart';
+import 'package:sun_business/sun_business.dart'
+    show SittingInfo, SittingPosition, Tuple;
 
 class AnimatedCurvedProgressBar extends StatefulWidget {
   final SittingInfo sittingInfo;
@@ -15,19 +15,19 @@ class AnimatedCurvedProgressBar extends StatefulWidget {
 
 class _AnimatedCurvedProgressBarState extends State<AnimatedCurvedProgressBar>
     with SingleTickerProviderStateMixin {
-  late AnimationController _firstAnimationController;
+  late AnimationController _animationController;
   //late AnimationController _secondAnimationController;
   Offset? asdff;
 
   @override
   void initState() {
     super.initState();
-    _firstAnimationController = AnimationController(
+    _animationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 3), // Adjust the duration as needed
+      duration: const Duration(seconds: 3), // Adjust the duration as needed
     );
 
-    _firstAnimationController.forward(); // Start the first animation.
+    _animationController.forward(); // Start the first animation.
     //Future.delayed(Duration(seconds: 4), () {
     // _secondAnimationController.forward(); // Start the first animation.
     //});
@@ -41,9 +41,9 @@ class _AnimatedCurvedProgressBarState extends State<AnimatedCurvedProgressBar>
         child: Stack(
           children: [
             AnimatedBuilder(
-              animation: _firstAnimationController,
+              animation: _animationController,
               builder: (context, child) => StaggeredAnimation(
-                controller: _firstAnimationController,
+                controller: _animationController,
                 sittingInfo: widget.sittingInfo,
               ),
             ),
@@ -55,7 +55,7 @@ class _AnimatedCurvedProgressBarState extends State<AnimatedCurvedProgressBar>
 
   @override
   void dispose() {
-    _firstAnimationController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 }
@@ -169,7 +169,8 @@ class StaggeredAnimation extends StatelessWidget {
                               _sittingPosition,
                               style: TextStyle(
                                 fontSize: 40 * secondPhaseAnimation.value,
-                                color: Colors.black,
+                                color: ResultAnimationUtil.determinColor(
+                                    sittingInfo.position),
                               ),
                             ),
                           ),
@@ -198,7 +199,7 @@ class StaggeredAnimation extends StatelessWidget {
 
 class CurvedProgressBarPainter extends CustomPainter {
   final double progress;
-  final List<double> segmentLengths;
+  final List<Tuple<double, SittingPosition>> segmentLengths;
 
   CurvedProgressBarPainter({
     required this.segmentLengths,
@@ -207,26 +208,20 @@ class CurvedProgressBarPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final startAngle = pi * (2 / 3); // Start from the bottom
+    const startAngle = pi * (2 / 3); // Start from the bottom
     final sweepAngle = pi * (5 / 3) * progress;
     final rect = Rect.fromCircle(
         center: Offset(size.width / 2, size.height / 2), radius: 120);
 
-    final paintBlue = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.blue // Change this to your first color
-      ..strokeWidth = 10;
-
-    final paintGreen = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.green // Change this to your first color
-      ..strokeWidth = 10;
-
     double currentSegmentStartAngle = startAngle;
     for (int i = 1; i < segmentLengths.length; i++) {
+      final paint = Paint()
+        ..style = PaintingStyle.stroke
+        ..color = ResultAnimationUtil.determinColor(segmentLengths[i].second)
+        ..strokeWidth = 10;
       // Skip the first angle
       final currentSegmentSweepAngle =
-          (pi * 2) * (segmentLengths[i] - segmentLengths[i - 1]);
+          (pi * 2) * (segmentLengths[i].first - segmentLengths[i - 1].first);
       if (sweepAngle >=
           currentSegmentSweepAngle + currentSegmentStartAngle - startAngle) {
         canvas.drawArc(
@@ -234,7 +229,7 @@ class CurvedProgressBarPainter extends CustomPainter {
           currentSegmentStartAngle,
           currentSegmentSweepAngle,
           false,
-          i % 2 == 0 ? paintBlue : paintGreen,
+          paint,
         );
         currentSegmentStartAngle += currentSegmentSweepAngle;
       } else {
@@ -246,7 +241,7 @@ class CurvedProgressBarPainter extends CustomPainter {
           currentSegmentStartAngle,
           remainingAngle,
           false,
-          i % 2 == 0 ? paintBlue : paintGreen,
+          paint,
         );
         break;
       }

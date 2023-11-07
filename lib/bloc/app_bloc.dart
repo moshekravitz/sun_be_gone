@@ -3,8 +3,9 @@ import 'package:sun_be_gone/bloc/actions.dart';
 import 'package:sun_be_gone/bloc/app_state.dart';
 import 'package:sun_be_gone/data/app_cache.dart';
 import 'package:sun_be_gone/data/persistent_data.dart';
+import 'package:sun_be_gone/models/api_response.dart';
 import 'package:sun_be_gone/models/bus_routes.dart';
-import 'package:sun_be_gone/models/nav_index.dart';
+import 'package:sun_be_gone/models/errors.dart';
 import 'package:sun_be_gone/models/route_quary_info.dart';
 import 'package:sun_be_gone/services/bus_extended_route_api.dart';
 import 'package:sun_be_gone/services/bus_routes_api.dart';
@@ -12,7 +13,7 @@ import 'package:sun_be_gone/services/bus_shape_api.dart';
 import 'package:sun_be_gone/services/bus_stops_api.dart';
 import 'package:sun_be_gone/services/results_api.dart';
 import 'package:sun_be_gone/services/server_connection_api.dart';
-import 'package:sun_business/position_calc.dart' show Point;
+import 'package:sun_business/models/point.dart';
 
 class AppBloc extends Bloc<AppAction, AppState> {
   final BusRoutesApiProtocol busRoutesApi;
@@ -31,19 +32,23 @@ class AppBloc extends Bloc<AppAction, AppState> {
   }) : super(const InitState(isInitialized: false)) {
     on<InitAppAction>((event, emit) async {
       print('on InitAppAction');
-      //emit(const IsLoadingState());
-      //print('emitted IsLoadingState');
-      final routesResponse;
+      final ApiResponse<Iterable<BusRoutes>?> routesResponse;
       try {
-        String checkLive = await serverConnectionApi.checkLive();
-        if (checkLive != 'Healthy') {
-          emit(const ErrorState(error: Errors.serverDown));
+        ApiResponse<String> checkLive = await serverConnectionApi.checkLive();
+        if (checkLive.data != 'Healthy') {
+          emit(
+              ErrorState(error: Errors(ErrorType.serverDown, null, checkLive)));
         }
 
-        String checkHealth = await serverConnectionApi.checkHealth();
-        if (checkHealth != 'Healthy') {
-          emit(const ErrorState(
-            error: Errors.serverDown,
+        ApiResponse<String> checkHealth =
+            await serverConnectionApi.checkHealth();
+        if (checkHealth.data != 'Healthy') {
+          emit(ErrorState(
+            error: Errors(
+              ErrorType.serverDown,
+              null,
+              checkHealth,
+            ),
           ));
         }
 
@@ -51,15 +56,24 @@ class AppBloc extends Bloc<AppAction, AppState> {
         AppCache.instance().busRoutes = routesResponse.data;
       } catch (e) {
         print('routes api gave an error');
-        emit(const ErrorState(
-          error: Errors.noRoutes,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.appError,
+            e is Error ? e : null,
+            null,
+          ),
         ));
         return;
       }
+
       if (routesResponse.data == null) {
         print('routes api gave an error');
-        emit(const ErrorState(
-          error: Errors.noRoutes,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.apiError,
+            null,
+            routesResponse,
+          ),
         ));
         return;
       }
@@ -85,15 +99,23 @@ class AppBloc extends Bloc<AppAction, AppState> {
         AppCache.instance().busRoutes = routesResponse.data;
       } catch (e) {
         print('routes api gave an error');
-        emit(const ErrorState(
-          error: Errors.noRoutes,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.appError,
+            e is Error ? e : null,
+            null,
+          ),
         ));
         return;
       }
       if (routesResponse.data == null) {
         print('routes api gave an error');
-        emit(const ErrorState(
-          error: Errors.noRoutes,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.apiError,
+            null,
+            routesResponse,
+          ),
         ));
         return;
       }
@@ -113,8 +135,12 @@ class AppBloc extends Bloc<AppAction, AppState> {
           await extendedRoutesApi.getExtendedRoutes(event.routeId);
       if (extendedRoutesResponse.data == null) {
         print('extendedRoutes api gave an error');
-        emit(const ErrorState(
-          error: Errors.noExtendedRoutes,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.apiError,
+            null,
+            extendedRoutesResponse,
+          ),
         ));
         return;
       }
@@ -122,8 +148,12 @@ class AppBloc extends Bloc<AppAction, AppState> {
           await busStopsApi.getBusStops(extendedRoutesResponse.data!);
       if (stopsResponse.data == null) {
         print('stops api gave an error');
-        emit(const ErrorState(
-          error: Errors.noStops,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.apiError,
+            null,
+            stopsResponse,
+          ),
         ));
         return;
       }
@@ -131,8 +161,12 @@ class AppBloc extends Bloc<AppAction, AppState> {
           await busShapeApi.getShapes(extendedRoutesResponse.data!.shapeId);
       if (shapeResponse.data == null) {
         print('shape api gave an error');
-        emit(const ErrorState(
-          error: Errors.noShape,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.apiError,
+            null,
+            shapeResponse,
+          ),
         ));
         return;
       }
@@ -185,7 +219,6 @@ class AppBloc extends Bloc<AppAction, AppState> {
           stopsList.last.stopLat,
         );
       } else {
-        print('departureIndex and destinationIndex are not -1');
         print('departureIndex: ${event.departureIndex}');
         print('destinationIndex: ${event.destinationIndex}');
         firstStopPoint = Point(
@@ -214,9 +247,12 @@ class AppBloc extends Bloc<AppAction, AppState> {
       );
 
       if (resultsResponse.data == null) {
-        print('results api gave an error');
-        emit(const ErrorState(
-          error: Errors.noResults,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.apiError,
+            null,
+            resultsResponse,
+          ),
         ));
         return;
       }
@@ -228,8 +264,12 @@ class AppBloc extends Bloc<AppAction, AppState> {
             (element) => element.routeId == event.quaryInfo.routeId);
       } catch (e) {
         print('error in AddRouteToHistoryAction error: $e');
-        emit(const ErrorState(
-          error: Errors.noRoutes,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.appError,
+            e is Error ? e : null,
+            null,
+          ),
         ));
         return;
       }
@@ -245,8 +285,12 @@ class AppBloc extends Bloc<AppAction, AppState> {
     on<NoRouteFoundAction>((event, emit) {
       print("on NoRouteFoundAction");
 
-      emit(const ErrorState(
-        error: Errors.noRoutes,
+      emit(ErrorState(
+        error: Errors(
+          ErrorType.appError,
+          null,
+          null,
+        ),
       ));
     });
 
@@ -257,8 +301,12 @@ class AppBloc extends Bloc<AppAction, AppState> {
       Iterable<BusRoutes>? busRoutes = AppCache.instance().busRoutes;
       if (busRoutes == null) {
         print('busRoutes is null in NavigatedToBookmarksAction');
-        emit(const ErrorState(
-          error: Errors.noRoutes,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.appError,
+            null,
+            null,
+          ),
         ));
         return;
       }
@@ -281,8 +329,12 @@ class AppBloc extends Bloc<AppAction, AppState> {
         //AppCache.instance().bookmarksBusRoutes = bookmarkRoutes.toList();
       } catch (e) {
         print('error in NavigatedToBookmarksAction error: $e');
-        emit(const ErrorState(
-          error: Errors.noRoutes,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.appError,
+            e is Error ? e : null,
+            null,
+          ),
         ));
         return;
       }
@@ -304,8 +356,12 @@ class AppBloc extends Bloc<AppAction, AppState> {
             (element) => element.routeId.toString() == event.routeId);
       } catch (e) {
         print('error in AddToBookmarksAction error: $e');
-        emit(const ErrorState(
-          error: Errors.noRoutes,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.appError,
+            e is Error ? e : null,
+            null,
+          ),
         ));
         return;
       }
@@ -323,8 +379,12 @@ class AppBloc extends Bloc<AppAction, AppState> {
             (element) => element.routeId.toString() == event.routeId);
       } catch (e) {
         print('error in RemoveRouteFromFavoritesAction error: $e');
-        emit(const ErrorState(
-          error: Errors.noRoutes,
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.appError,
+            e is Error ? e : null,
+            null,
+          ),
         ));
         return;
       }

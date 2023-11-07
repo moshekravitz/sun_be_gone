@@ -79,9 +79,10 @@ class MainScreen extends StatelessWidget {
           showGenericDialog<bool>(
             context: context,
             title: 'Error',
-            content: appState.error.toString(),
+            content: appState.error.message,
             optionsBuilder: () => {'OK': true},
           );
+          context.read<NavIndexCubit>().setIndex(const NavIndex(Pages.home));
         }
 
         if (appState is IsLoadingState) {
