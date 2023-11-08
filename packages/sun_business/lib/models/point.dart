@@ -25,7 +25,7 @@ class Point {
   }
   @override
   String toString() {
-    return 'long: $longitude, lat: $latitude\n';
+    return 'long: $longitude, lat: $latitude';
   }
 
   bool isNull() {
@@ -53,10 +53,15 @@ class Point {
   }
 
   //find the closest point to the point in a list and return its index
-  static int closestPoint(List<Point> points, Point point) {
+  static int closestPoint(List<Point> points, Point point,
+      [int startIndex = 0]) {
+    if (startIndex >= points.length) {
+        print('startIndex is bigger than points length');
+        return points.length - 1;
+    }
     double minDistance = double.infinity;
     int index = 0;
-    for (int i = 0; i < points.length; i++) {
+    for (int i = startIndex; i < points.length; i++) {
       if (points[i].distanceTo(point) < minDistance) {
         minDistance = points[i].distanceTo(point);
         index = i;
@@ -80,4 +85,3 @@ class Point {
     return newPoints;
   }
 }
-

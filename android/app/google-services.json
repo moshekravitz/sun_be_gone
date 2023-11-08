@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "386120161235",
+    "project_id": "gtfs-cf784",
+    "storage_bucket": "gtfs-cf784.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386120161235:android:970aee2dcd3df1697e8126",
+        "android_client_info": {
+          "package_name": "com.example.sun_be_gone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNoGus0alfgjOCdKIY7Qn3RClFug69aks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

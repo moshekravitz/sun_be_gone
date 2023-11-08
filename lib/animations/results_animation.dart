@@ -126,7 +126,7 @@ class StaggeredAnimation extends StatelessWidget {
                 alignment: Alignment.center,
                 children: [
                   CustomPaint(
-                    size: Size(200, 200), // Adjust the size as needed
+                    size: const Size(200, 200), // Adjust the size as needed
                     painter: CurvedProgressBarPainter(
                       progress: firstPhaseAnimation.value,
                       segmentLengths: sittingInfo.segments!,

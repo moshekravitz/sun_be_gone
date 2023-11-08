@@ -13,7 +13,9 @@ import 'package:sun_be_gone/services/bus_shape_api.dart';
 import 'package:sun_be_gone/services/bus_stops_api.dart';
 import 'package:sun_be_gone/services/results_api.dart';
 import 'package:sun_be_gone/services/server_connection_api.dart';
-import 'package:sun_business/models/point.dart';
+import 'package:sun_be_gone/utils/stop_quary_to_tuple.dart';
+import 'package:sun_business/logic/extensions.dart';
+import 'package:sun_business/sun_business.dart' show Point, Tuple;
 
 class AppBloc extends Bloc<AppAction, AppState> {
   final BusRoutesApiProtocol busRoutesApi;
@@ -157,19 +159,6 @@ class AppBloc extends Bloc<AppAction, AppState> {
         ));
         return;
       }
-      final shapeResponse =
-          await busShapeApi.getShapes(extendedRoutesResponse.data!.shapeId);
-      if (shapeResponse.data == null) {
-        print('shape api gave an error');
-        emit(ErrorState(
-          error: Errors(
-            ErrorType.apiError,
-            null,
-            shapeResponse,
-          ),
-        ));
-        return;
-      }
 
       Iterable<StopQuaryInfo> fullStopQuaryInfo =
           StopQuaryInfo.createStopQuaryInfo(
@@ -180,7 +169,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
       RouteQuaryInfo quaryInfo = RouteQuaryInfo(
         routeId: event.routeId,
         routeHeadSign: extendedRoutesResponse.data!.routeHeadSign,
-        shapeStr: shapeResponse.data!,
+        shapeId: extendedRoutesResponse.data!.shapeId,
         fullStopQuaryInfo: fullStopQuaryInfo.toList(),
         stopQuaryInfo: null,
         dateTime: event.dateTime,
@@ -204,33 +193,31 @@ class AppBloc extends Bloc<AppAction, AppState> {
 
       emit(const IsLoadingState());
 
-      List stopsList = event.quaryInfo.fullStopQuaryInfo!.toList();
-      final Point firstStopPoint;
-      final Point lastStopPoint;
-
-      if (event.departureIndex == -1 && event.destinationIndex == -1) {
-        print('departureIndex and destinationIndex are -1');
-        firstStopPoint = Point(
-          stopsList.first.stopLon,
-          stopsList.first.stopLat,
-        );
-        lastStopPoint = Point(
-          stopsList.last.stopLon,
-          stopsList.last.stopLat,
-        );
-      } else {
-        print('departureIndex: ${event.departureIndex}');
-        print('destinationIndex: ${event.destinationIndex}');
-        firstStopPoint = Point(
-          stopsList[event.departureIndex].stopLon,
-          stopsList[event.departureIndex].stopLat,
-        );
-        lastStopPoint = Point(
-          stopsList[event.destinationIndex].stopLon,
-          stopsList[event.destinationIndex].stopLat,
-        );
+      final shapeResponse =
+          await busShapeApi.getShapes(event.quaryInfo.shapeId!);
+      if (shapeResponse.data == null) {
+        print('shape api gave an error');
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.apiError,
+            null,
+            shapeResponse,
+          ),
+        ));
+        return;
       }
 
+      List stopsList = event.quaryInfo.fullStopQuaryInfo!.toList();
+
+      if (event.departureIndex == -1 && event.destinationIndex == -1) {
+        event.quaryInfo.stopQuaryInfo = event.quaryInfo.fullStopQuaryInfo;
+      } else {
+        event.quaryInfo.stopQuaryInfo = event.quaryInfo.fullStopQuaryInfo!
+            .toList()
+            .sublist(event.departureIndex, event.destinationIndex + 1);
+      }
+
+      //sublist that includes the first and last stop
       late final DateTime dateTime;
       if (event.quaryInfo.dateTime == null) {
         print('dateTime is null');
@@ -239,10 +226,13 @@ class AppBloc extends Bloc<AppAction, AppState> {
         dateTime = event.quaryInfo.dateTime!;
       }
 
+      List<Tuple<Point, DateTime>> poinsWithTime =
+          createPointsTimeTuple(event.quaryInfo.stopQuaryInfo!,event.quaryInfo.fullStopQuaryInfo!.first, dateTime).toList();
+        //poinsWithTime.forEach((e) => print(e.second));
+
       final resultsResponse = await resultsApi.getSittingResults(
-        event.quaryInfo.shapeStr!,
-        firstStopPoint,
-        lastStopPoint,
+        shapeResponse.data!,
+        poinsWithTime,
         dateTime,
       );
 

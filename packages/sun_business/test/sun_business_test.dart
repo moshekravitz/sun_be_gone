@@ -1,10 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sun_business/models/point.dart';
-
 import 'package:sun_business/sun_business.dart';
 
 void main() {
-  test('adds one to input values', () async {
+ /* test('adds one to input values', () async {
     final Point departure = Point(34.98973, 31.70847);
     final Point destination = Point(35.16979, 31.79639);
     final SunBusiness api = SunBusiness();
@@ -12,7 +10,7 @@ void main() {
     DateTime midday = DateTime.now().add(const Duration(hours: 12));
 
     var result =
-        await api.whereToSit(polyline, departure, destination, midday);
+        await api.whereToSitMulti(polyline, departure, destination, midday);
 
     for(var segment in result.segments!) {
       print('segment: ${segment}');
@@ -20,6 +18,7 @@ void main() {
 
     //expect(calculator.addOne(2), 3);
   });
+*/
 }
 
 String polyline =

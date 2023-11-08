@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:sun_be_gone/models/api_response.dart';
-import 'package:sun_be_gone/models/bus_routes.dart';
 import 'dart:convert' show jsonDecode;
 
 import 'package:http/http.dart' as http;

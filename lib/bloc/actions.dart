@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:sun_be_gone/models/bus_routes.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
 import 'package:sun_be_gone/models/route_quary_info.dart';
+import 'package:sun_be_gone/models/stops_info_time.dart';
 
 @immutable
 abstract class AppAction {

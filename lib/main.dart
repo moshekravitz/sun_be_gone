@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sun_be_gone/views/app.dart';
 
-void main() {
+void main() async {
   runApp(
-      const App(),
-      );
+    const App(),
+  );
 }
-

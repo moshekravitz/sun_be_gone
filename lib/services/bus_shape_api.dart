@@ -6,7 +6,6 @@ import 'dart:convert' show jsonDecode;
 import 'package:http/http.dart' as http;
 import 'package:sun_be_gone/models/api_response.dart';
 import 'package:sun_be_gone/services/http_url.dart';
-import 'package:sun_business/position_calc.dart' show Point;
 
 @immutable
 abstract class BusShapeApiProtocol {
