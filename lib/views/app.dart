@@ -112,7 +112,7 @@ class MainScreen extends StatelessWidget {
         }
 
         if (appState is RoutesReadyState) {
-          context.read<NavIndexCubit>().setIndex(NavIndex(Pages.search));
+          context.read<NavIndexCubit>().setIndex(const NavIndex(Pages.search));
           //context.read<BusRotuesBloc>().add(const GetBusRoutesAction());
         }
 

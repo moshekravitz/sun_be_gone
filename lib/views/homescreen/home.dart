@@ -1,10 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
+import 'package:sun_be_gone/ad_state.dart';
 import 'package:sun_be_gone/views/homescreen/enter_search.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   final OnSearchTapped onSearchTapped;
 
   const Home({super.key, required this.onSearchTapped});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  BannerAd? banner;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final adState = Provider.of<AdState>(context);
+    adState.initialization.then((status) {
+      setState(() {
+        banner = BannerAd(
+          adUnitId: adState.bannerAdUnitId,
+          size: AdSize.banner,
+          request: const AdRequest(),
+          listener: adState.bannerAdListener,
+        )..load();
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +67,7 @@ class Home extends StatelessWidget {
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
-                        EnterSearch(onSearchTapped: onSearchTapped),
+                        EnterSearch(onSearchTapped: widget.onSearchTapped),
                       ],
                     ),
                   ),
@@ -49,21 +75,20 @@ class Home extends StatelessWidget {
               ],
             ),
           ),
+          // ad
+          const SizedBox(
+            height: 10,
+          ),
+          if (banner != null)
+            Expanded(
+              child: AdWidget(ad: banner!),
+            )
+          else
+            const SizedBox(
+              height: 50,
+            ),
         ],
       ),
-    );
-  }
-}
-
-class Home2 extends StatelessWidget {
-  const Home2({super.key});
-
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      // Body
-      body: Text('No routes found'),
     );
   }
 }

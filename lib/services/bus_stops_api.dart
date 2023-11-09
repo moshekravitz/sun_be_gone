@@ -45,7 +45,6 @@ class BusStopsApi implements BusStopsApiProtocol {
     //http.StreamedResponse response = await request.send();
     //var response = await request.send();
 
-    print('request string: ' + response.request.toString());
     if (response.statusCode == 200) {
       print('status code for bus stops: ${response.statusCode}');
     } else {

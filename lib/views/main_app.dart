@@ -13,9 +13,7 @@ import 'package:sun_be_gone/widgets/bottom_navigation.dart';
 import 'package:sun_be_gone/widgets/splash_screen.dart';
 
 class MainApp extends StatelessWidget {
-  const MainApp({
-    super.key,
-  });
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart' show immutable;
 
 ///import 'package:sun_be_gone/models/bus_routes.dart';
-import 'dart:convert' show jsonDecode;
+import 'dart:convert' show json, jsonDecode;
 
 import 'package:http/http.dart' as http;
 import 'package:sun_be_gone/models/api_response.dart';
@@ -16,6 +16,7 @@ abstract class ServerConnectionApiProtocol {
 
 @immutable
 class MockServerConnectionApi implements ServerConnectionApiProtocol {
+
   @override
   Future<ApiResponse<String>> checkLive() {
     print('mocking check live api request');
@@ -83,5 +84,31 @@ class ServerConnectionApi implements ServerConnectionApiProtocol {
       data: parsed['status'],
       error: response.reasonPhrase,
     );
+  }
+
+  static void sendErrorToServer(dynamic error, StackTrace? stackTrace) {
+    final url = Uri.parse(HttpUrl.serverUrl('/error'));
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+    };
+
+    final body = <String, dynamic>{
+      'error': error.toString(),
+      'stack_trace': stackTrace.toString(),
+    };
+
+    // Send a POST request to your logging server
+    http.post(url, headers: headers, body: json.encode(body));
+    /*
+    .then((response) {
+      if (response.statusCode == 200) {
+        // The error was successfully sent to the server
+        print('Error logged successfully');
+      } else {
+        // Error logging failed
+        print('Error logging failed');
+      }
+    });
+    */
   }
 }

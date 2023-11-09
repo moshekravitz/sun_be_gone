@@ -29,10 +29,8 @@ void main() {
         routeShortName: splitstrs[i][2],
         routeLongName: splitstrs[i][3]);
 
-    List<String> pretty = busRoutes.prettyString1();
-    for (var i = 0; i < pretty.length; i++) {
-        print(pretty[i]);
-    }
+    String pretty = busRoutes.prettyString();
+    print(pretty);
 
   });
 }
