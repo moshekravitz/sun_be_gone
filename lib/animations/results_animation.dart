@@ -2,7 +2,7 @@ import 'dart:math' show pi;
 import 'package:flutter/material.dart';
 import 'package:sun_be_gone/utils/result_animation_util.dart';
 import 'package:sun_business/sun_business.dart'
-    show SittingInfo, SittingPosition, Tuple;
+    show SittingInfo, SittingPosition;
 
 class AnimatedCurvedProgressBar extends StatefulWidget {
   final SittingInfo sittingInfo;
@@ -194,7 +194,7 @@ class StaggeredAnimation extends StatelessWidget {
 
 class CurvedProgressBarPainter extends CustomPainter {
   final double progress;
-  final List<Tuple<double, SittingPosition>> segmentLengths;
+  final List<(double, SittingPosition)> segmentLengths;
 
   CurvedProgressBarPainter({
     required this.segmentLengths,
@@ -212,11 +212,11 @@ class CurvedProgressBarPainter extends CustomPainter {
     for (int i = 1; i < segmentLengths.length; i++) {
       final paint = Paint()
         ..style = PaintingStyle.stroke
-        ..color = ResultAnimationUtil.determinColor(segmentLengths[i].second)
+        ..color = ResultAnimationUtil.determinColor(segmentLengths[i].$2)
         ..strokeWidth = 10;
       // Skip the first angle
       final currentSegmentSweepAngle =
-          (pi * 2) * (segmentLengths[i].first - segmentLengths[i - 1].first);
+          (pi * 2) * (segmentLengths[i].$1 - segmentLengths[i - 1].$1);
       if (sweepAngle >=
           currentSegmentSweepAngle + currentSegmentStartAngle - startAngle) {
         canvas.drawArc(

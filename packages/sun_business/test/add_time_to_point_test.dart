@@ -1,4 +1,3 @@
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sun_business/sun_business.dart';
 
@@ -14,11 +13,11 @@ void main() {
       Point(5, 5),
     ];
 
-    List<Tuple<Point, DateTime>> stops = [
-      Tuple(Point(0, 0), DateTime(2023, 11, 8, 10, 0, 0)),
-      Tuple(Point(2.2, 2.2), DateTime(2023, 11, 8, 10, 30, 0)),
-      Tuple(Point(3.5, 3.5), DateTime(2023, 11, 8, 11, 0, 0)),
-      Tuple(Point(5,5), DateTime(2023, 11, 8, 11, 30, 0)),
+    List<(Point, DateTime)> stops = [
+      (Point(0, 0), DateTime(2023, 11, 8, 10, 0, 0)),
+      (Point(2.2, 2.2), DateTime(2023, 11, 8, 10, 30, 0)),
+      (Point(3.5, 3.5), DateTime(2023, 11, 8, 11, 0, 0)),
+      (Point(5, 5), DateTime(2023, 11, 8, 11, 30, 0)),
     ];
 
     SunBusiness sunBusiness = SunBusiness();
@@ -28,6 +27,5 @@ void main() {
 
     // Assert the result
     //expect(result.length, 6);
-
   });
 }

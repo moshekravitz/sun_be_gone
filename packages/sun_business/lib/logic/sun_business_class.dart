@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart' show compute;
-import 'package:sun_business/logic/extensions.dart';
 import 'package:sun_business/models/point.dart';
 import 'package:sun_business/models/sitting_info.dart';
 import 'package:sun_business/logic/sun_pos_calc.dart';
@@ -7,7 +6,7 @@ import 'package:sun_business/logic/sun_pos_calc.dart';
 // class for whereToSit params
 class _Params {
   final String str;
-  final List<Tuple<Point, DateTime>> stops;
+  final List<(Point, DateTime)> stops;
   final DateTime dateTime;
 
   _Params(this.str, this.stops, this.dateTime);
@@ -21,7 +20,7 @@ class SunBusiness {
   /// The final sitting place given a [str].
   SittingInfo whereToSit({
     required String str,
-    required List<Tuple<Point, DateTime>> stops,
+    required List<(Point, DateTime)> stops,
     required DateTime dateTime,
   }) {
     return _whereToSit(_Params(str, stops, dateTime));
@@ -29,7 +28,7 @@ class SunBusiness {
 
   // whereToSit but with multiprocessing
   Future<SittingInfo> whereToSitMulti(
-      String str, List<Tuple<Point, DateTime>> stops, DateTime dateTime) {
+      String str, List<(Point, DateTime)> stops, DateTime dateTime) {
     return compute(_whereToSit, _Params(str, stops, dateTime));
   }
 
@@ -38,10 +37,9 @@ class SunBusiness {
     List<Point> decodedPoints = _polylineDecode(params.str);
 
     List<Point> finalPointsList = Point.removeIrelevent(
-        decodedPoints, params.stops.first.first, params.stops.last.first);
+        decodedPoints, params.stops.first.$1, params.stops.last.$1);
 
-    //params.stops.correctTimes(params.dateTime);
-    List<Tuple<Point, DateTime>> finalPoints;
+    List<(Point, DateTime)> finalPoints;
     finalPoints = _addTimeToPoint(finalPointsList, params.stops);
 
     SittingInfo sittingInfo = _finalPosition(finalPoints);
@@ -110,7 +108,7 @@ class SunBusiness {
   }
 
   SittingInfo _finalPosition(
-      List<Tuple<Point, DateTime>> points) //, cTime theTime, Point sunPosition)
+      List<(Point, DateTime)> points) //, cTime theTime, Point sunPosition)
   {
     //List<Point> listOfSunAngles = [];
     //double left = 0, right = 0;
@@ -130,11 +128,11 @@ class SunBusiness {
     List<double> noneSegments = [0];
     var it = points.iterator;
     it.moveNext();
-    Point currentPoint = Point.copy(it.current.first);
+    Point currentPoint = Point.copy(it.current.$1);
 
     while (it.moveNext()) {
-      Point offsetToNext = it.current.first - currentPoint;
-      DateTime dateTime = it.current.second;
+      Point offsetToNext = it.current.$1 - currentPoint;
+      DateTime dateTime = it.current.$2;
       //cLocation pointLocation = cLocation(it.current.longitude,it.current.latitude);
       SpaStruct spa = SpaStruct(
           dateTime.year,
@@ -174,7 +172,7 @@ class SunBusiness {
               noneSegments.last,
             ].reduce((a, b) => a > b ? a : b));
         countNone += offsetToNext.distance();
-        currentPoint = Point.copy(it.current.first);
+        currentPoint = Point.copy(it.current.$1);
         continue;
       }
 
@@ -207,10 +205,10 @@ class SunBusiness {
         countNone += offsetToNext.distance();
         noneSegments.add(newSegment);
       }
-      currentPoint = Point.copy(it.current.first);
+      currentPoint = Point.copy(it.current.$1);
     }
 
-    List<Tuple<double, SittingPosition>> segments =
+    List<(double, SittingPosition)> segments =
         _fixSegments(leftSegments, rightSegments, noneSegments);
 
     // TwoIntergers result = TwoIntergers(countright,countleft);
@@ -266,91 +264,91 @@ class SunBusiness {
         protectionPercentage: protectionPercentage);
   }
 
-  List<Tuple<double, SittingPosition>> _fixSegments(List<double> leftSegments,
+  List<(double, SittingPosition)> _fixSegments(List<double> leftSegments,
       List<double> rightSegments, List<double> noneSegments) {
     //leftSegments means sit right and RightSegments mean sit left
-    List<Tuple<double, SittingPosition>> segments1 = leftSegments
+    List<(double, SittingPosition)> segments1 = leftSegments
         .map((e) {
-          return Tuple(e, SittingPosition.right);
+          return (e, SittingPosition.right);
         })
         .toList()
         .followedBy(rightSegments.map((e) {
-          return Tuple(e, SittingPosition.left);
+          return (e, SittingPosition.left);
         }))
         .toList()
         .followedBy(noneSegments.map((e) {
-          return Tuple(e, SittingPosition.both);
+          return (e, SittingPosition.both);
         }))
         .toList()
-      ..sort((a, b) => a.first.compareTo(b.first));
+      ..sort((a, b) => a.$1.compareTo(b.$1));
 
-    List<Tuple<double, SittingPosition>> segments = [segments1.first];
+    List<(double, SittingPosition)> segments = [segments1.first];
 
     for (int i = 1; i < segments1.length; i++) {
-      if (segments1[i - 1].second == segments1[i].second) {
+      if (segments1[i - 1].$2 == segments1[i].$2) {
         segments.removeLast();
       }
       segments.add(segments1[i]);
     }
 
     segments.removeWhere((element) =>
-        element.first == 0.0 && element.second != SittingPosition.both);
+        element.$1 == 0.0 && element.$2 != SittingPosition.both);
 
-    var maxVal = segments.last.first;
+    var maxVal = segments.last.$1;
     if (maxVal == 0.0) {
       return [
-        Tuple(0.0, SittingPosition.both),
-        Tuple(1.0, SittingPosition.both)
+        (0.0, SittingPosition.both),
+        (1.0, SittingPosition.both)
       ];
     }
     return segments.map((e) {
-      double fixedValue = (e.first) / maxVal;
-      return Tuple(fixedValue, e.second);
+      double fixedValue = (e.$1) / maxVal;
+      return (fixedValue, e.$2);
     }).toList();
   }
 
   /// puts a date time to each point based on the distance between the two points its between
-  List<Tuple<Point, DateTime>> _addTimeToPoint(
-      List<Point> points, List<Tuple<Point, DateTime>> stops) {
-    List<Tuple<Point, DateTime>?> finalPoints = [];
+  List<(Point, DateTime)> _addTimeToPoint(
+      List<Point> points, List<(Point, DateTime)> stops) {
+    List<(Point, DateTime)?> finalPoints = [];
 
-    int lastPointIndex = Point.closestPoint(points, stops.first.first);
-    Tuple<Point, DateTime> lastReferencePoint = stops.first;
+    int lastPointIndex = Point.closestPoint(points, stops.first.$1);
+    (Point, DateTime) lastReferencePoint = stops.first;
 
     for (int i = 1; i < stops.length; i++) {
-      Tuple<Point, DateTime> currentReferencePoint = stops[i];
+      (Point, DateTime) currentReferencePoint = stops[i];
 
       int pointIndex = Point.closestPoint(
-          points, currentReferencePoint.first, lastPointIndex + 1);
+          points, currentReferencePoint.$1, lastPointIndex + 1);
       if (pointIndex <= lastPointIndex && pointIndex == points.length - 1) {
         break;
       }
 
       List<Point> pointsBetween = points.sublist(lastPointIndex, pointIndex);
 
-      if (lastReferencePoint.first.distanceTo(points[pointIndex]) <=
-          lastReferencePoint.first.distanceTo(currentReferencePoint.first)) {
+      if (lastReferencePoint.$1.distanceTo(points[pointIndex]) <=
+          lastReferencePoint.$1.distanceTo(currentReferencePoint.$1)) {
         pointsBetween.add(points[pointIndex]);
         pointIndex++;
       }
-      //pointsBetween.forEach((element) => print(element));
+
       double distanceBetween =
-          currentReferencePoint.first.distanceTo(lastReferencePoint.first);
+          currentReferencePoint.$1.distanceTo(lastReferencePoint.$1);
       Duration timeBetween =
-          currentReferencePoint.second.difference(lastReferencePoint.second);
+          currentReferencePoint.$2.difference(lastReferencePoint.$2);
 
       finalPoints.addAll(pointsBetween.map((e) {
-        if (finalPoints.any((element) => element?.first == e)) {
+        if (finalPoints.any((element) => element?.$1 == e)) {
           return null;
         }
 
-        double distanceToLastPoint = e.distanceTo(lastReferencePoint.first);
+        double distanceToLastPoint = e.distanceTo(lastReferencePoint.$1);
         double percentage = distanceToLastPoint / distanceBetween;
 
         Duration timeToLastPoint =
             Duration(seconds: (timeBetween.inSeconds * percentage).round());
 
-        return Tuple(e, lastReferencePoint.second.add(timeToLastPoint));
+        return (e, lastReferencePoint.$2.add(timeToLastPoint));
       }));
 
       lastPointIndex = pointIndex;

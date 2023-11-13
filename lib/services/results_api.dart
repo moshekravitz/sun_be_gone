@@ -9,7 +9,7 @@ abstract class ResultsApiProtocol {
 
   Future<ApiResponse<SittingInfo>> getSittingResults(
 String shapeStr,
-      List<Tuple<Point, DateTime>> points, DateTime dateTime);
+      List<(Point, DateTime)> points, DateTime dateTime);
 }
 
 class ResultsApi implements ResultsApiProtocol {
@@ -17,7 +17,7 @@ class ResultsApi implements ResultsApiProtocol {
 
   @override
   Future<ApiResponse<SittingInfo>> getSittingResults(String shapeStr,
-      List<Tuple<Point, DateTime>> points, DateTime dateTime) async {
+      List<(Point, DateTime)> points, DateTime dateTime) async {
     SunBusiness sunBusiness = SunBusiness();
     try {
       Stopwatch stopwatch = Stopwatch()..start();

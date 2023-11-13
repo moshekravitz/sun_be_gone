@@ -2,11 +2,11 @@ import 'package:intl/intl.dart';
 import 'package:sun_be_gone/models/route_quary_info.dart';
 import 'package:sun_business/sun_business.dart';
 
-Iterable<Tuple<Point, DateTime>> createPointsTimeTuple(
+Iterable<(Point, DateTime)> createPointsTimeTuple(
     Iterable<StopQuaryInfo> stopQuaryInfo,
     StopQuaryInfo firstRouteStop,
     DateTime dateTime) {
-  List<Tuple<Point, DateTime>> pointsTimeTuple = [];
+  List<(Point, DateTime)> pointsTimeTuple = [];
 
   for (var item in stopQuaryInfo) {
     String stopInterval = item.stopInterval;
@@ -20,18 +20,15 @@ Iterable<Tuple<Point, DateTime>> createPointsTimeTuple(
     DateTime dateTime = DateFormat('HH:mm:ss').parse(timeStr);
 
     pointsTimeTuple.add(
-      Tuple<Point, DateTime>(
-        point,
-        dateTime,
-      ),
+      (point, dateTime),
     );
   }
 
-  DateTime firstPointTime = pointsTimeTuple.first.second;
+  DateTime firstPointTime = pointsTimeTuple.first.$2;
 
   return pointsTimeTuple.map((e) {
-    Duration timeDifference = e.second.difference(firstPointTime);
-    return Tuple(e.first, dateTime.add(timeDifference));
+    Duration timeDifference = e.$2.difference(firstPointTime);
+    return (e.$1, dateTime.add(timeDifference));
   });
   //return pointsTimeTuple;
 }

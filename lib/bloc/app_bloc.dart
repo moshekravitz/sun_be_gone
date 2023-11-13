@@ -16,7 +16,7 @@ import 'package:sun_be_gone/services/results_api.dart';
 import 'package:sun_be_gone/services/server_connection_api.dart';
 import 'package:sun_be_gone/utils/logger.dart';
 import 'package:sun_be_gone/utils/stop_quary_to_tuple.dart';
-import 'package:sun_business/sun_business.dart' show Point, Tuple;
+import 'package:sun_business/sun_business.dart' show Point;
 
 class AppBloc extends Bloc<AppAction, AppState> {
   final BusRoutesApiProtocol busRoutesApi;
@@ -267,7 +267,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
         dateTime = event.quaryInfo.dateTime!;
       }
 
-      List<Tuple<Point, DateTime>> poinsWithTime = createPointsTimeTuple(
+      List<(Point, DateTime)> poinsWithTime = createPointsTimeTuple(
               event.quaryInfo.fullStopQuaryInfo!.toList().sublist(
                     event.quaryInfo.departureIndex!,
                     event.quaryInfo.destinationIndex! + 1,

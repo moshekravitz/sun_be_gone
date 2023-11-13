@@ -1,7 +1,6 @@
-
-
 enum SittingPosition { left, right, both }
 
+/*
 class Tuple<A, B> {
   final A first;
   final B second;
@@ -11,10 +10,11 @@ class Tuple<A, B> {
   @override
   String toString() => '($first, $second)';
 }
+*/
 
 class SittingInfo {
   SittingPosition position;
-  List<Tuple<double, SittingPosition>>? segments;
+  List<(double, SittingPosition)>? segments;
   int? protectionPercentage;
 
   SittingInfo(
@@ -22,4 +22,3 @@ class SittingInfo {
       required this.segments,
       required this.protectionPercentage});
 }
-
