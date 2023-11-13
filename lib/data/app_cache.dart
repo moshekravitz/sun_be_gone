@@ -1,50 +1,40 @@
-
 //class for manageing the cache
 import 'package:sun_be_gone/models/bus_routes.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 
 class AppCache {
   //singleton
   AppCache._sharedInstance();
-  static late final AppCache _shared = AppCache._sharedInstance();
+  static final AppCache _shared = AppCache._sharedInstance();
   factory AppCache.instance() => _shared;
 
   Iterable<BusRoutes>? _busRoutes;
-  Iterable<BusRoutes>? _historyBusRoutes;
-  Iterable<BusRoutes>? _bookmarksBusRoutes;
-
-  //check if _busRoutes is initialized
+  bool _busRoutesIsComplete = false;
 
   Iterable<BusRoutes>? get busRoutes => _busRoutes;
-  //Iterable<BusRoutes>? get historyBusRoutes => _historyBusRoutes;
-  //Iterable<BusRoutes>? get bookmarksBusRoutes => _bookmarksBusRoutes;
 
   set busRoutes(Iterable<BusRoutes>? value) {
-      if(_busRoutes != null) {
-          print("Warning: busRoutes is already initialized");
-      }
-          
+    if (_busRoutesIsComplete) {
+      logger.w("Warning: busRoutes is already initialized");
+    }
     _busRoutes = value;
   }
 
-/*
-  set historyBusRoutes(Iterable<BusRoutes>? value) {
-      if(_historyBusRoutes != null) {
-          print("Warning: historyBusRoutes is already initialized");
-      }
-          
-    _historyBusRoutes = value;
-  }
+  bool get busRoutesIsComplete => _busRoutesIsComplete;
+  bool get busRoutesIsNotComplete => !_busRoutesIsComplete;
 
-  set bookmarksBusRoutes(Iterable<BusRoutes>? value) {
-      if(_bookmarksBusRoutes != null) {
-          print("Warning: bookmarksBusRoutes is already initialized");
-      }
-          
-    _bookmarksBusRoutes = value;
+  set busRoutesIsComplete(bool value) {
+    if (_busRoutes == null) {
+      logger.w("Warning: busRoutes is not initialized");
+      return;
+    }
+    if (_busRoutesIsComplete) {
+      logger.w("Warning: isBusRoutesInitialized is already initialized");
+    }
+    _busRoutesIsComplete = value;
   }
-  */
 
   void clear() {
-      _busRoutes = null;
+    _busRoutes = null;
   }
 }

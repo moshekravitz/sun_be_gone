@@ -36,12 +36,6 @@ class App extends StatelessWidget {
       home: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => BusRotuesBloc(
-              busRoutesApi: BusRoutesApi(),
-              serverConnectionApi: ServerConnectionApi(),
-            ),
-          ),
-          BlocProvider(
             create: (context) => AppBloc(
               busRoutesApi: BusRoutesApi(),
               extendedRoutesApi: ExtendedRouteApi(),
@@ -49,10 +43,14 @@ class App extends StatelessWidget {
               busShapeApi: BusShapeApi(),
               resultsApi: ResultsApi(),
               serverConnectionApi: ServerConnectionApi(),
+              busRoutesDB: BusRouteDB(),
               busRoutesQuaryDB: BusRoutesQuaryDB(),
               favoritesIdsDB: FavoritesIdsDB(),
               historyIdsDB: HistoryIdsDB(),
             ),
+          ),
+          BlocProvider(
+            create: (context) => BusRotuesBloc(),
           ),
           BlocProvider(
             create: (context) => NavIndexCubit(),
@@ -132,9 +130,17 @@ class MainScreen extends StatelessWidget {
           int arrivalIndex = -1;
           StopPicker.instance().show(
               context: context,
-              stops: appState.quaryInfo!.fullStopQuaryInfo!,
-              setDepartureIndex: (index) => departureIndex = index,
-              setDestinationIndex: (index) => arrivalIndex = index,
+              fullStops: appState.quaryInfo!.fullStopQuaryInfo!,
+              initDepartureIndex: appState.quaryInfo!.departureIndex ?? -1,
+              initDestinationIndex: appState.quaryInfo!.destinationIndex ?? -1,
+              setDepartureIndex: (index) {
+                appState.quaryInfo!.departureIndex = index;
+                departureIndex = index;
+              },
+              setDestinationIndex: (index) {
+                arrivalIndex = index;
+                appState.quaryInfo!.destinationIndex = index;
+              },
               onCancelButton: () {
                 StopPicker.instance().hide();
               },

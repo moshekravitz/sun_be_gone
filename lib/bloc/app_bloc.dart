@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:sun_be_gone/bloc/actions.dart';
 import 'package:sun_be_gone/bloc/app_state.dart';
 import 'package:sun_be_gone/data/app_cache.dart';
-import 'package:sun_be_gone/data/persistent_data.dart';
 import 'package:sun_be_gone/data/sqlite_db.dart';
 import 'package:sun_be_gone/models/api_response.dart';
 import 'package:sun_be_gone/models/bus_route_full_data.dart';
@@ -26,6 +25,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
   final BusShapeApiProtocol busShapeApi;
   final ResultsApiProtocol resultsApi;
   final ServerConnectionApiProtocol serverConnectionApi;
+  final BusRoutesDBInterface busRoutesDB;
   final BusRoutesQuaryDBInterface busRoutesQuaryDB;
   final HistoryIdsDBInterface historyIdsDB;
   final FavoritesIdsDBInterface favoritesIdsDB;
@@ -37,13 +37,14 @@ class AppBloc extends Bloc<AppAction, AppState> {
     required this.busShapeApi,
     required this.resultsApi,
     required this.serverConnectionApi,
+    required this.busRoutesDB,
     required this.busRoutesQuaryDB,
     required this.historyIdsDB,
     required this.favoritesIdsDB,
   }) : super(const InitState(isInitialized: false)) {
     on<InitAppAction>((event, emit) async {
       logger.i('on InitAppAction');
-      final ApiResponse<Iterable<BusRoutes>?> routesResponse;
+      final Iterable<BusRoutes> routes;
       try {
         ApiResponse<String> checkLive = await serverConnectionApi.checkLive();
         if (checkLive.data != 'Healthy') {
@@ -72,8 +73,9 @@ class AppBloc extends Bloc<AppAction, AppState> {
           ));
         }
 
-        routesResponse = await busRoutesApi.getBusRoutes();
-        AppCache.instance().busRoutes = routesResponse.data;
+        //routesResponse = await BusRoutesDBInterface().getBusRoutes();
+        routes = await busRoutesDB.getBusRoutes();
+        AppCache.instance().busRoutes = routes;
       } catch (e) {
         logger.e('routes api gave an error', e);
         emit(ErrorState(
@@ -81,18 +83,6 @@ class AppBloc extends Bloc<AppAction, AppState> {
             ErrorType.appError,
             e is Error ? e : null,
             null,
-          ),
-        ));
-        return;
-      }
-
-      if (routesResponse.data == null) {
-        logger.e('routes api gave an error');
-        emit(ErrorState(
-          error: Errors(
-            ErrorType.apiError,
-            null,
-            routesResponse,
           ),
         ));
         return;
@@ -106,17 +96,18 @@ class AppBloc extends Bloc<AppAction, AppState> {
 
       emit(const IsLoadingState());
       logger.i('started loading in GetRoutesAction');
-      if (AppCache.instance().busRoutes != null) {
+      if (AppCache.instance().busRoutesIsComplete) {
         emit(RoutesReadyState(
           routes: AppCache.instance().busRoutes!,
         ));
         return;
       }
 
-      final routesResponse;
+      ApiResponse<Iterable<BusRoutes>?> routesResponse;
       try {
         routesResponse = await busRoutesApi.getBusRoutes();
         AppCache.instance().busRoutes = routesResponse.data;
+        AppCache.instance().busRoutesIsComplete = true;
       } catch (e) {
         logger.e('routes api gave an error', e);
         emit(ErrorState(
@@ -161,7 +152,8 @@ class AppBloc extends Bloc<AppAction, AppState> {
           routeId: routeQuaryDb.routeId,
           routeHeadSign: "",
           shapeId: routeQuaryDb.shapeId,
-          stopQuaryInfo: routeQuaryDb.stops,
+          departureIndex: routeQuaryDb.departureIndex,
+          destinationIndex: routeQuaryDb.destinationIndex,
           fullStopQuaryInfo: routeQuaryDb.fullStops,
           dateTime: event.dateTime,
           fromLocal: true,
@@ -213,7 +205,8 @@ class AppBloc extends Bloc<AppAction, AppState> {
         routeHeadSign: extendedRoutesResponse.data!.routeHeadSign,
         shapeId: extendedRoutesResponse.data!.shapeId,
         fullStopQuaryInfo: fullStopQuaryInfo.toList(),
-        stopQuaryInfo: null,
+        departureIndex: -1,
+        destinationIndex: -1,
         dateTime: event.dateTime,
         fromLocal: false,
       );
@@ -257,30 +250,14 @@ class AppBloc extends Bloc<AppAction, AppState> {
         shapeStr = shapeResponse.data!;
       }
       RoutesQuaryData routesQuaryData;
-      if (event.departureIndex == -1 && event.destinationIndex == -1) {
-        event.quaryInfo.stopQuaryInfo = event.quaryInfo.fullStopQuaryInfo;
-
-        routesQuaryData = RoutesQuaryData(
-          routeId: event.quaryInfo.routeId!,
-          shapeId: event.quaryInfo.shapeId!,
-          shapeStr: shapeStr,
-          stops: null,
-          fullStops: event.quaryInfo.fullStopQuaryInfo!.toList(),
-        );
-      } else {
-        event.quaryInfo.stopQuaryInfo = event.quaryInfo.fullStopQuaryInfo!
-            .toList()
-            .sublist(event.departureIndex, event.destinationIndex + 1);
-
-        routesQuaryData = RoutesQuaryData(
-          routeId: event.quaryInfo.routeId!,
-          shapeId: event.quaryInfo.shapeId!,
-          shapeStr: shapeStr,
-          stops: event.quaryInfo.stopQuaryInfo!.toList(),
-          fullStops: event.quaryInfo.fullStopQuaryInfo!.toList(),
-        );
-      }
-
+      routesQuaryData = RoutesQuaryData(
+        routeId: event.quaryInfo.routeId!,
+        shapeId: event.quaryInfo.shapeId!,
+        shapeStr: shapeStr,
+        departureIndex: event.quaryInfo.departureIndex!,
+        destinationIndex: event.quaryInfo.destinationIndex!,
+        fullStops: event.quaryInfo.fullStopQuaryInfo!.toList(),
+      );
       //sublist that includes the first and last stop
       late final DateTime dateTime;
       if (event.quaryInfo.dateTime == null) {
@@ -291,7 +268,10 @@ class AppBloc extends Bloc<AppAction, AppState> {
       }
 
       List<Tuple<Point, DateTime>> poinsWithTime = createPointsTimeTuple(
-              event.quaryInfo.stopQuaryInfo!,
+              event.quaryInfo.fullStopQuaryInfo!.toList().sublist(
+                    event.quaryInfo.departureIndex!,
+                    event.quaryInfo.destinationIndex! + 1,
+                  ),
               event.quaryInfo.fullStopQuaryInfo!.first,
               dateTime)
           .toList();
@@ -378,31 +358,16 @@ class AppBloc extends Bloc<AppAction, AppState> {
       Iterable<int> favoriteRouteIds;
       List<BusRoutes>? historyRoutes;
       List<BusRoutes>? favoriteRoutes;
-      //try {
-      /*
-        favoriteRouteIds =
-            (await AppData.getBookmarks()).map((e) => int.parse(e));
-        historyRouteIds = (await AppData.getHistory()).map((e) => int.parse(e));
+      try {
+        favoriteRouteIds = await favoritesIdsDB.getFavoriteIds();
+        favoriteRoutes = busRoutes
+            .where((element) => favoriteRouteIds.contains(element.routeId))
+            .toList();
+        historyRouteIds = await historyIdsDB.getHistoryIds();
         historyRoutes = busRoutes
             .where((element) => historyRouteIds.contains(element.routeId))
             .toList();
-        bookmarkRoutes = busRoutes
-            .where((element) => favoriteRouteIds.contains(element.routeId))
-            .toList();
-            */
-      favoriteRouteIds = await favoritesIdsDB.getFavoriteIds();
-      print('here1');
-      favoriteRoutes = busRoutes
-          .where((element) => favoriteRouteIds.contains(element.routeId))
-          .toList();
-      print('here2');
-      historyRouteIds = await historyIdsDB.getHistoryIds();
-      print('here3');
-      historyRoutes = busRoutes
-          .where((element) => historyRouteIds.contains(element.routeId))
-          .toList();
-      try {//TODO put up
-        print('here4');
+        logger.i('got history and favorite routes');
       } catch (e) {
         logger.e('error in NavigatedToBookmarksAction error', e);
         emit(ErrorState(
@@ -419,6 +384,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
         historyRoutes: historyRoutes,
         favoriteRoutes: favoriteRoutes,
       ));
+      logger.i('emitting BookmarksState');
     });
 
     on<AddRouteToFavoritsAction>((event, emit) async {
@@ -432,7 +398,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
         await AppData.addBookmark(event.routeId);
         */
         int saveFavRes = await favoritesIdsDB.saveFavoriteId(event.routeId);
-        print('saveFavRes: $saveFavRes');
+        logger.i('saveFavRes: $saveFavRes');
         busRoute = AppCache.instance()
             .busRoutes!
             .firstWhere((element) => element.routeId == event.routeId);
@@ -457,8 +423,9 @@ class AppBloc extends Bloc<AppAction, AppState> {
       BusRoutes busRoute;
       try {
         await favoritesIdsDB.deleteFavoriteId(event.routeId);
-        busRoute = AppCache.instance().busRoutes!.firstWhere(
-            (element) => element.routeId.toString() == event.routeId);
+        busRoute = AppCache.instance()
+            .busRoutes!
+            .firstWhere((element) => element.routeId == event.routeId);
       } catch (e) {
         logger.i('error in RemoveRouteFromFavoritesAction error', e);
         emit(ErrorState(

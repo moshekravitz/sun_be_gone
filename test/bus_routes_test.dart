@@ -31,6 +31,5 @@ void main() {
 
     String pretty = busRoutes.prettyString();
     print(pretty);
-
   });
 }

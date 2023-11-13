@@ -99,6 +99,9 @@ class MainApp extends StatelessWidget {
 
                             if (index == 1) {
                               context
+                                  .read<NavIndexCubit>()
+                                  .setIndex(const NavIndex(Pages.bookmarks));
+                              context
                                   .read<AppBloc>()
                                   .add(const NavigatedToBookmarksAction());
                             }

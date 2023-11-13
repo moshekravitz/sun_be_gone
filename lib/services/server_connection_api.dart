@@ -66,6 +66,7 @@ class ServerConnectionApi implements ServerConnectionApiProtocol {
     );
   }
 
+  @override
   Future<ApiResponse<String>> checkHealth() async {
     var response = await http.get(
       Uri.parse(HttpUrl.serverUrl('/health/ready')),

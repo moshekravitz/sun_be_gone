@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sun_be_gone/dialogs/stop_picker_dialog_controller.dart';
 import 'package:sun_be_gone/dialogs/stops_list_view.dart';
 import 'package:sun_be_gone/models/route_quary_info.dart';
-import 'package:sun_be_gone/models/stop_info.dart';
 
 typedef ButtonPressedCallback = void Function();
 
@@ -18,11 +17,15 @@ class StopPicker {
   late Function(int) setDepartureIndex;
   late Function(int) setDestinationIndex;
 
-  late Iterable<StopQuaryInfo> stops;
+  late Iterable<StopQuaryInfo> fullStops;
+  late int initDepartureIndex;
+  late int initDestinationIndex;
 
   void show({
     required BuildContext context,
-    required Iterable<StopQuaryInfo> stops,
+    required Iterable<StopQuaryInfo> fullStops,
+    required int initDepartureIndex,
+    required int initDestinationIndex,
     required ButtonPressedCallback onCloseButton,
     required ButtonPressedCallback onCancelButton,
     required Function(int) setDepartureIndex,
@@ -30,7 +33,9 @@ class StopPicker {
   }) {
     _controller = _showOverlay(
       context: context,
-      stops: stops,
+      fullStops: fullStops,
+      initDepartureIndex: initDepartureIndex,
+      initDestinationIndex: initDestinationIndex,
       onCloseButton: onCloseButton,
       onCancelButton: onCancelButton,
       setDepartureIndex: setDepartureIndex,
@@ -45,13 +50,14 @@ class StopPicker {
 
   StopPickerController _showOverlay({
     required BuildContext context,
-    required Iterable<StopQuaryInfo> stops,
+    required Iterable<StopQuaryInfo> fullStops,
+    required int initDepartureIndex,
+    required int initDestinationIndex,
     required ButtonPressedCallback onCloseButton,
     required ButtonPressedCallback onCancelButton,
     required Function(int) setDepartureIndex,
     required Function(int) setDestinationIndex,
   }) {
-    // get the size
 
     final state = Overlay.of(context);
     final renderBox = context.findRenderObject() as RenderBox;
@@ -78,7 +84,9 @@ class StopPicker {
                   children: [
                     Expanded(
                       child: StopsListView(
-                        stops: stops,
+                        fullStops: fullStops,
+                        initDepartureIndex: initDepartureIndex,
+                        initDestinationIndex: initDestinationIndex,
                         setDepartureIndex: setDepartureIndex,
                         setDestinationIndex: setDestinationIndex,
                       ),

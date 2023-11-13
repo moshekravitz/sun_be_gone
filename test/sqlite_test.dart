@@ -41,15 +41,17 @@ void main() async {
     ];
     RoutesQuaryData routeQuaryData = RoutesQuaryData(
       routeId: 1,
-      stops: stops,
+      departureIndex: 0,
+      destinationIndex: 1,
       fullStops: stops,
       shapeId: 1,
       shapeStr: null,
     );
-    var saveRouteQRes = await busRoutesQuaryDb.saveRouteQuaryInfo(routeQuaryData);
+    var saveRouteQRes =
+        await busRoutesQuaryDb.saveRouteQuaryInfo(routeQuaryData);
     expect(saveRouteQRes, 1);
     var getRouteQRes = await busRoutesQuaryDb.getRouteQuaryInfo(1);
     expect(getRouteQRes!.routeId, 1);
-    expect(getRouteQRes.stops!.length, 2);
+    expect(getRouteQRes.fullStops.length, 2);
   });
 }

@@ -2,8 +2,6 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sun_be_gone/data/app_cache.dart';
 import 'package:sun_be_gone/models/bus_routes.dart' show BusRoutes;
-import 'package:sun_be_gone/services/bus_routes_api.dart';
-import 'package:sun_be_gone/services/server_connection_api.dart';
 import 'package:sun_be_gone/utils/logger.dart';
 
 @immutable
@@ -40,40 +38,24 @@ class BusRoutesState {
 }
 
 class BusRotuesBloc extends Bloc<BusRoutesAction, BusRoutesState> {
-  final BusRoutesApiProtocol busRoutesApi;
-  final ServerConnectionApiProtocol serverConnectionApi;
-
-  BusRotuesBloc({
-    required this.busRoutesApi,
-    required this.serverConnectionApi,
-  }) : super(BusRoutesState(
+  BusRotuesBloc()
+      : super(BusRoutesState(
           busRoutes: AppCache.instance().busRoutes ?? [],
         )) {
     on<GetBusRoutesAction>((event, emit) async {
       logger.i('BusRoutesAction get called');
-      if (AppCache.instance().busRoutes != null) {
-        logger.i('getting routes from cache');
+      if (AppCache.instance().busRoutesIsNotComplete) {
+        logger.e('bus routes didnt get from server in busRoutesBloc');
+      }
+      logger.i('getting routes from cache');
+      try {
+        Iterable<BusRoutes> routes = AppCache.instance().busRoutes!;
         emit(BusRoutesState(
-          busRoutes: AppCache.instance().busRoutes!,
+          busRoutes: routes,
         ));
         return;
-      }
-      logger.i('getting routes from server');
-      try {
-        final busRoutesResponse = await busRoutesApi.getBusRoutes();
-        AppCache.instance().busRoutes = busRoutesResponse.data;
-
-        if (busRoutesResponse.data == null) {
-          emit(const BusRoutesState(
-            busRoutes: [],
-          ));
-          return;
-        }
-
-        emit(BusRoutesState(
-          busRoutes: busRoutesResponse.data!,
-        ));
       } catch (e) {
+        logger.e('error in getting routes from cache');
         emit(BusRoutesState(
           error: e as Error,
           busRoutes: const [],

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:sun_be_gone/models/stop_info.dart';
 import 'package:sun_be_gone/models/stop_time.dart';
 
@@ -58,7 +56,8 @@ class RouteQuaryInfo {
   int? routeId;
   String? routeHeadSign;
   int? shapeId;
-  Iterable<StopQuaryInfo>? stopQuaryInfo;
+  int? departureIndex;
+  int? destinationIndex;
   Iterable<StopQuaryInfo>? fullStopQuaryInfo;
   DateTime? dateTime;
   bool? fromLocal;
@@ -67,7 +66,8 @@ class RouteQuaryInfo {
     required this.routeId,
     required this.routeHeadSign,
     required this.shapeId,
-    required this.stopQuaryInfo,
+    required this.departureIndex,
+    required this.destinationIndex,
     required this.fullStopQuaryInfo,
     required this.dateTime,
     required this.fromLocal,
@@ -77,7 +77,8 @@ class RouteQuaryInfo {
     routeId = null;
     routeHeadSign = null;
     shapeId = null;
-    stopQuaryInfo = null;
+    departureIndex = null;
+    destinationIndex = null;
     fullStopQuaryInfo = null;
     dateTime = null;
     fromLocal = null;
@@ -88,7 +89,8 @@ class RouteQuaryInfo {
       'routeId': routeId,
       'routeHeadSign': routeHeadSign,
       'shapeId': shapeId,
-      'stopQuaryInfo': stopQuaryInfo,
+      'departureIndex': departureIndex,
+      'destinationIndex': destinationIndex,
       'fullStopQuaryInfo': fullStopQuaryInfo,
       'dateTime': dateTime,
       'fromLocal': fromLocal,
@@ -97,11 +99,11 @@ class RouteQuaryInfo {
 
   @override
   String toString() {
-    return 'RouteQuaryInfo{routeId: $routeId, routeHeadSign: $routeHeadSign, shapeStr: $shapeId, stopQuaryInfo: $stopQuaryInfo, fullStopQuaryInfo: $fullStopQuaryInfo, currentTime: $dateTime, fromLocal: $fromLocal}';
+    return 'RouteQuaryInfo{routeId: $routeId, routeHeadSign: $routeHeadSign, shapeStr: $shapeId, departureINdex: $departureIndex, destinationIndex $destinationIndex, fullStopQuaryInfo: $fullStopQuaryInfo, currentTime: $dateTime, fromLocal: $fromLocal}';
   }
 
   bool quaryInfoIsReady() {
-    return (shapeId != null && stopQuaryInfo != null && dateTime != null);
+    return (shapeId != null && fullStopQuaryInfo != null && dateTime != null);
   }
 
   RouteQuaryInfo copyWithObj({required RouteQuaryInfo quaryInfo}) {
@@ -109,7 +111,8 @@ class RouteQuaryInfo {
       routeId: quaryInfo.routeId ?? routeId,
       routeHeadSign: quaryInfo.routeHeadSign ?? routeHeadSign,
       shapeId: quaryInfo.shapeId ?? shapeId,
-      stopQuaryInfo: quaryInfo.stopQuaryInfo ?? stopQuaryInfo,
+      departureIndex: quaryInfo.departureIndex ?? departureIndex,
+      destinationIndex: quaryInfo.destinationIndex ?? destinationIndex,
       fullStopQuaryInfo: quaryInfo.fullStopQuaryInfo ?? fullStopQuaryInfo,
       fromLocal: quaryInfo.fromLocal ?? fromLocal,
       dateTime: quaryInfo.dateTime ?? dateTime,
@@ -121,7 +124,8 @@ class RouteQuaryInfo {
     int? routeId,
     String? routeHeadSign,
     int? shapeId,
-    List<StopQuaryInfo>? stopQuaryInfo,
+    int? departureIndex,
+    int? destinationIndex,
     List<StopQuaryInfo>? fullStopQuaryInfo,
     DateTime? dateTime,
     bool? fromLocal,
@@ -130,7 +134,8 @@ class RouteQuaryInfo {
       routeId: routeId ?? this.routeId,
       routeHeadSign: routeHeadSign ?? this.routeHeadSign,
       shapeId: shapeId ?? this.shapeId,
-      stopQuaryInfo: stopQuaryInfo ?? this.stopQuaryInfo,
+      departureIndex: departureIndex ?? this.departureIndex,
+      destinationIndex: destinationIndex ?? this.destinationIndex,
       fullStopQuaryInfo: fullStopQuaryInfo ?? this.fullStopQuaryInfo,
       dateTime: dateTime ?? this.dateTime,
       fromLocal: fromLocal ?? this.fromLocal,

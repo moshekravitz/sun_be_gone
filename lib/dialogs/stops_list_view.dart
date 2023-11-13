@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sun_be_gone/models/bus_routes.dart';
 import 'package:sun_be_gone/models/route_quary_info.dart' show StopQuaryInfo;
 
 class BusStop {
@@ -11,14 +10,20 @@ class BusStop {
 
 @immutable
 class StopsListView extends StatefulWidget {
-  final Iterable<StopQuaryInfo> stops;
+  final Iterable<StopQuaryInfo> fullStops;
+  final int initDepartureIndex;
+  final int initDestinationIndex;
+
   //add callback for setting departure and destination indexes
 
   final void Function(int) setDepartureIndex;
   final void Function(int) setDestinationIndex;
 
-  const StopsListView({super.key, 
-    required this.stops,
+  const StopsListView({
+    super.key,
+    required this.fullStops,
+    required this.initDepartureIndex,
+    required this.initDestinationIndex,
     required this.setDepartureIndex,
     required this.setDestinationIndex,
   });
@@ -36,7 +41,13 @@ class _StopsListViewState extends State<StopsListView> {
   @override
   void initState() {
     super.initState();
-    busStops = widget.stops.map((e) => BusStop(e.stopName, false)).toList();
+    busStops = widget.fullStops.map((e) => BusStop(e.stopName, false)).toList();
+    if (widget.initDepartureIndex != -1 && widget.initDestinationIndex != -1) {
+      departureIndex = widget.initDepartureIndex;
+      destinationIndex = widget.initDestinationIndex;
+      busStops[departureIndex].isSelected = true;
+      busStops[destinationIndex].isSelected = true;
+    }
   }
 
   void selectStop(int index) {

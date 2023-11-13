@@ -49,7 +49,8 @@ class SQLiteDB {
     await db.execute('''
         CREATE TABLE IF NOT EXISTS routeQuaryData (
         routeId INTEGER PRIMARY KEY,
-        stops TEXT,
+        departureIndex INTEGER,
+        destinationIndex INTEGER,
         fullStops TEXT,
         shapeId INTEGER,
         shapeStr TEXT)
@@ -91,20 +92,6 @@ abstract class HistoryIdsDBInterface {
   Future<List<int>> getHistoryIds();
   Future<int> deleteHistoryId(int id);
 }
-
-/*
-abstract class FavoriteBusRoutesDBInterface {
-  Future<int> saveFavoriteBusRoute(int routeId);
-  Future<List<int>> getFavoriteBusRoutes();
-  Future<int> deleteFavoriteBusRoute(int id);
-}
-
-abstract class HistoryBusRoutesDBInterface {
-  Future<int> saveHistoryBusRoute(int routeId);
-  Future<List<int>> getHistoryBusRoutesQuary();
-  Future<int> deleteHistoryBusRouteQuary(int id);
-}
-*/
 
 class BusRouteDB implements BusRoutesDBInterface {
   String tableName = "busRoutes";
@@ -156,18 +143,17 @@ class BusRoutesQuaryDB implements BusRoutesQuaryDBInterface {
       tableName,
       routeQuaryData.toMap().map((key, value) {
         if (key == 'stops') {
-          print('stops: ${jsonEncode(value)}');
           return MapEntry('stops', jsonEncode(value));
         } else if (key == 'fullStops') {
-          print('full stops: ${jsonEncode(value)}');
           return MapEntry('fullStops', jsonEncode(value));
         } else {
-          print('key: $key, value: $value');
           return MapEntry(key, value.toString());
         }
       }),
-      conflictAlgorithm: ConflictAlgorithm.ignore,
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
+
+    //print('stops map from save db: ${routeQuaryData.toMap()');
     return res;
   }
 
@@ -186,7 +172,9 @@ class BusRoutesQuaryDB implements BusRoutesQuaryDBInterface {
     var dbClient = await SQLiteDB().db;
     var res =
         await dbClient.query(tableName, where: "routeId = ?", whereArgs: [id]);
-    return res.isNotEmpty ? RoutesQuaryData.fromJson(res.first) : null;
+    var asdf = res.isNotEmpty ? RoutesQuaryData.fromJson(res.first) : null;
+
+    return asdf;
   }
 
   @override
@@ -277,67 +265,3 @@ class HistoryIdsDB implements HistoryIdsDBInterface {
     return res;
   }
 }
-
-/*
-class FavoriteBusRoutesDB implements FavoriteBusRoutesDBInterface {
-  String tableName = "favoriteRoutes";
-
-  Future<int> saveFavoriteBusRoute(int routeId) async {
-    var dbClient = await SQLiteDB().db;
-    int res = await dbClient.insert(
-      tableName,
-      {'routeId': routeId},
-      conflictAlgorithm: ConflictAlgorithm.ignore,
-    );
-    return res;
-  }
-
-  Future<List<int>> getFavoriteBusRoutes() async {
-    var dbClient = await SQLiteDB().db;
-    var res = await dbClient.query(tableName);
-    List<int> list =
-        res.isNotEmpty ? res.map((c) => c['routeId'] as int).toList() : [];
-    return list;
-  }
-
-  Future<int> deleteFavoriteBusRoute(int id) async {
-    var dbClient = await SQLiteDB().db;
-    int res =
-        await dbClient.delete(tableName, where: 'routeId = ?', whereArgs: [id]);
-    return res;
-  }
-}
-
-class HistoryBusRoutesDB implements HistoryBusRoutesDBInterface {
-  String tableName = "historyRoutes";
-  @override
-  Future<int> saveHistoryBusRoute(int routeId) async {
-    int res;
-    var dbClient = await SQLiteDB().db;
-    res = await dbClient.insert(
-      tableName,
-      {'routeId': routeId},
-      conflictAlgorithm: ConflictAlgorithm.ignore,
-    );
-    return res;
-  }
-
-  @override
-  Future<List<int>> getHistoryBusRoutesQuary() async {
-    var dbClient = await SQLiteDB().db;
-    var res = await dbClient.query(tableName);
-    List<int> list =
-        res.isNotEmpty ? res.map((c) => c['routeId'] as int).toList() : [];
-    return list;
-  }
-
-  @override
-  Future<int> deleteHistoryBusRouteQuary(int id) async {
-    var dbClient = await SQLiteDB().db;
-    int res =
-        await dbClient.delete(tableName, where: 'routeId = ?', whereArgs: [id]);
-    return res;
-  }
-}
-
-*/

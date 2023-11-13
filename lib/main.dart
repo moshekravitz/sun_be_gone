@@ -7,6 +7,7 @@ import 'package:logger_plus/logger_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:sun_be_gone/ad_state.dart';
 import 'package:sun_be_gone/services/server_connection_api.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 import 'package:sun_be_gone/views/app.dart';
 
 void main() async {
@@ -22,6 +23,8 @@ void main() async {
   });
 
   FlutterError.onError = (details) async {
+    logger.i('details context: ${details.context}');
+    logger.e('FlutterError.onError stack: ${details.stack}', details.exception);
     //if app has no connection to the internet, then don't send error to server
     var connectivity = await Connectivity().checkConnectivity();
     if (connectivity == ConnectivityResult.none) {
