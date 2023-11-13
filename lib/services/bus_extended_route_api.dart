@@ -5,6 +5,7 @@ import 'dart:convert' show jsonDecode;
 import 'package:http/http.dart' as http;
 import 'package:sun_be_gone/models/extended_routes.dart';
 import 'package:sun_be_gone/services/http_url.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 
 @immutable
 abstract class ExtendedRouteApiProtocol {
@@ -17,7 +18,7 @@ class MockExtendedRouteApi implements ExtendedRouteApiProtocol {
   @override
   Future<ApiResponse<ExtendedRoutes?>> getExtendedRoutes(int routeId) //=>
   {
-      print('mocking api request');
+      logger.i('mocking api request');
       return Future.delayed(
         const Duration(seconds: 2),
         () => ApiResponse<ExtendedRoutes>(statusCode: 200, data: mockExtendedRoute),
@@ -40,19 +41,17 @@ class ExtendedRouteApi implements ExtendedRouteApiProtocol {
     //var response = await request.send();
 
     if (response.statusCode == 200) {
-      print('status code for extendedRoutes: ${response.statusCode}');
+      logger.i('status code for extendedRoutes: ${response.statusCode}');
     } else {
-      print(response.statusCode);
-      print(response.reasonPhrase);
+      logger.i(response.statusCode);
+      logger.i(response.reasonPhrase);
       return ApiResponse<ExtendedRoutes?>.bad(statusCode: response.statusCode, error: response.reasonPhrase);
     }
 
-    print('routeId: ' + routeId.toString());
     var parsedExtendedRoutes = parseExtendedRoutes(response.body);
     return ApiResponse<ExtendedRoutes?>(statusCode: response.statusCode, data: parsedExtendedRoutes);
   }
 
-  // A function that converts a response body into a List<BusRoutes>.
   ExtendedRoutes parseExtendedRoutes(String responseBody) {
 
     return ExtendedRoutes.fromJson(jsonDecode(responseBody));

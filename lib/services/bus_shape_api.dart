@@ -6,6 +6,7 @@ import 'dart:convert' show jsonDecode;
 import 'package:http/http.dart' as http;
 import 'package:sun_be_gone/models/api_response.dart';
 import 'package:sun_be_gone/services/http_url.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 
 @immutable
 abstract class BusShapeApiProtocol {
@@ -18,7 +19,7 @@ class MockShapeApi implements BusShapeApiProtocol {
   @override
   Future<ApiResponse<String>> getShapes(int shapeId) //=>
   {
-    print('mocking api request');
+    logger.i('mocking api request');
     return Future.delayed(
         const Duration(seconds: 2),
         () => ApiResponse<String>(
@@ -39,26 +40,16 @@ class BusShapeApi implements BusShapeApiProtocol {
     );
 
     if (response.statusCode == 200) {
-      print('status code for shape: ${response.statusCode}');
+      logger.i('status code for shape: ${response.statusCode}');
     } else {
-      print(response.statusCode);
-      print(response.reasonPhrase);
+      logger.i(response.statusCode);
+      logger.i(response.reasonPhrase);
       return ApiResponse.bad(
           statusCode: response.statusCode, error: response.reasonPhrase);
     }
 
-    print('shapeId: ' + shapeId.toString());
+    logger.i('shapeId: $shapeId');
     final parsed = jsonDecode(response.body);
-    //print('shapecoords: ' + parsed['shapeCoords']);
-
-/*
-    List<Point> points = (parsed['shapeCoords'] as List)
-        .map((e) => Point(
-              e['shapeLon'].toDouble(),
-              e['shapeLat'].toDouble(),
-            ))
-        .toList();
-        */
 
     return ApiResponse(statusCode: response.statusCode, data: parsed['shapeStr']);
   }

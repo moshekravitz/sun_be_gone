@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sun_be_gone/animations/results_animation.dart';
 import 'package:sun_be_gone/dialogs/generic_dialog.dart';
 import 'package:sun_business/sun_business.dart' show SittingInfo;
@@ -19,7 +18,7 @@ class LoadingResult extends StatelessWidget {
             top: 10,
             right: 10,
             child: IconButton(
-              icon: Icon(Icons.help),
+              icon: const Icon(Icons.help),
               onPressed: () => showGenericDialog<bool>(
                 context: context,
                 title: 'Info',

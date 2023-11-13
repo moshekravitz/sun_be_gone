@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 
 class AdState {
   Future<InitializationStatus> initialization;
@@ -21,20 +22,19 @@ class AdState {
 
   final BannerAdListener _bannerAdListener = BannerAdListener(
     onAdLoaded: (ad) {
-      print('Ad loaded: ${ad.adUnitId}.');
+      logger.i('Ad loaded: ${ad.adUnitId}.');
     },
     onAdFailedToLoad: (ad, error) {
-      print('Ad failed to load: ${ad.adUnitId}, $error.');
+      logger.i('Ad failed to load: ${ad.adUnitId}, $error.');
       ad.dispose();
     },
-    onAdOpened: (ad) => print('Ad opened: ${ad.adUnitId}.'),
-    onAdClosed: (ad) => print('Ad closed: ${ad.adUnitId}.'),
+    onAdOpened: (ad) => logger.i('Ad opened: ${ad.adUnitId}.'),
+    onAdClosed: (ad) => logger.i('Ad closed: ${ad.adUnitId}.'),
     onAdWillDismissScreen: (ad) =>
-        print('Ad will dismiss screen: ${ad.adUnitId}.'),
-    onAdImpression: (ad) => print('Ad impression: ${ad.adUnitId}.'),
-    onPaidEvent: (ad, value, precision, currencyCode) =>
-        print('Paid event: ${ad.adUnitId}, $value, $precision, $currencyCode.'),
-    onAdClicked: (ad) => print('Ad clicked: ${ad.adUnitId}.'),
+        logger.i('Ad will dismiss screen: ${ad.adUnitId}.'),
+    onAdImpression: (ad) => logger.i('Ad impression: ${ad.adUnitId}.'),
+    onPaidEvent: (ad, value, precision, currencyCode) => logger
+        .i('Paid event: ${ad.adUnitId}, $value, $precision, $currencyCode.'),
+    onAdClicked: (ad) => logger.i('Ad clicked: ${ad.adUnitId}.'),
   );
 }
-

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:sun_be_gone/utils/logger.dart';
 
 class DateTimePickerButton extends StatelessWidget {
   final DateTime dateTime;
@@ -31,7 +32,7 @@ class DateTimePickerButton extends StatelessWidget {
   }
 
   Widget buildTimePicker(DateTime dateTime) {
-    print('building date time');
+    logger.i('building date time');
     if (dateTime.day == DateTime.now().day) {
       return Row(
         children: [

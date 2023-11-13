@@ -4,6 +4,7 @@ import 'package:sun_be_gone/data/app_cache.dart';
 import 'package:sun_be_gone/models/bus_routes.dart' show BusRoutes;
 import 'package:sun_be_gone/services/bus_routes_api.dart';
 import 'package:sun_be_gone/services/server_connection_api.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 
 @immutable
 class BusRoutesAction {
@@ -49,15 +50,15 @@ class BusRotuesBloc extends Bloc<BusRoutesAction, BusRoutesState> {
           busRoutes: AppCache.instance().busRoutes ?? [],
         )) {
     on<GetBusRoutesAction>((event, emit) async {
-      print('BusRoutesAction get called');
+      logger.i('BusRoutesAction get called');
       if (AppCache.instance().busRoutes != null) {
-        print('getting routes from cache');
+        logger.i('getting routes from cache');
         emit(BusRoutesState(
           busRoutes: AppCache.instance().busRoutes!,
         ));
         return;
       }
-      print('getting routes from server');
+      logger.i('getting routes from server');
       try {
         final busRoutesResponse = await busRoutesApi.getBusRoutes();
         AppCache.instance().busRoutes = busRoutesResponse.data;
@@ -75,13 +76,13 @@ class BusRotuesBloc extends Bloc<BusRoutesAction, BusRoutesState> {
       } catch (e) {
         emit(BusRoutesState(
           error: e as Error,
-          busRoutes: [],
+          busRoutes: const [],
         ));
       }
     });
 
     on<FilterBusRoutesAction>((event, emit) async {
-      print('FilterBusRoutesAction filterCalled called');
+      logger.i('FilterBusRoutesAction filterCalled called');
       if (AppCache.instance().busRoutes == null) {
         emit(const BusRoutesState(
           busRoutes: [],

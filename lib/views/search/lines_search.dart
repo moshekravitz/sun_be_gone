@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sun_be_gone/models/nav_index.dart';
 
 typedef OnSubmittedLine = void Function(String? value);
 
+@immutable
 class LinesSearch extends StatefulWidget {
-  LinesSearch({super.key, required this.onSubmittedLine});
+  const LinesSearch({super.key, required this.onSubmittedLine});
 
   final OnSubmittedLine onSubmittedLine;
 

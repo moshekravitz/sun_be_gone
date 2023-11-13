@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:sun_be_gone/models/bus_routes.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
 import 'package:sun_be_gone/models/route_quary_info.dart';
-import 'package:sun_be_gone/models/stops_info_time.dart';
 
 @immutable
 abstract class AppAction {
@@ -74,24 +73,24 @@ class NavigatedToBookmarksAction extends AppAction {
 
 @immutable
 class AddRouteToFavoritsAction extends AppAction {
-  final String routeId;
+  final int routeId;
   const AddRouteToFavoritsAction({required this.routeId});
 }
 
 @immutable
 class RemoveRouteFromFavoritesAction extends AppAction {
-  final String routeId;
+  final int routeId;
   const RemoveRouteFromFavoritesAction({required this.routeId});
 }
 
 @immutable
 class AddRouteToHistoryAction extends AppAction {
-  final String routeId;
+  final int routeId;
   const AddRouteToHistoryAction({required this.routeId});
 }
 
 @immutable
 class RemoveRouteFromHistoryAction extends AppAction {
-  final String routeId;
+  final int routeId;
   const RemoveRouteFromHistoryAction({required this.routeId});
 }

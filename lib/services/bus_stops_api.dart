@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:sun_be_gone/models/extended_routes.dart';
 import 'package:sun_be_gone/models/stop_info.dart';
 import 'package:sun_be_gone/services/http_url.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 
 @immutable
 abstract class BusStopsApiProtocol {
@@ -19,7 +20,7 @@ class MockBusStopsApi implements BusStopsApiProtocol {
   Future<ApiResponse<Iterable<StopInfo>?>> getBusStops(
       ExtendedRoutes extendedRoutes) //=>
   {
-    print('mocking api request');
+    logger.i('mocking api request');
     return Future.delayed(
       const Duration(seconds: 2),
       () => ApiResponse(statusCode: 200, data: mockStopInfo),
@@ -46,10 +47,10 @@ class BusStopsApi implements BusStopsApiProtocol {
     //var response = await request.send();
 
     if (response.statusCode == 200) {
-      print('status code for bus stops: ${response.statusCode}');
+      logger.i('status code for bus stops: ${response.statusCode}');
     } else {
-      print(response.statusCode);
-      print(response.reasonPhrase);
+      logger.i(response.statusCode);
+      logger.i(response.reasonPhrase);
       return ApiResponse<Iterable<StopInfo>?>.bad(
           statusCode: response.statusCode, error: response.reasonPhrase);
     }

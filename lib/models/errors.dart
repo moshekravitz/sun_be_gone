@@ -1,4 +1,5 @@
 import 'package:sun_be_gone/models/api_response.dart' show ApiResponse;
+import 'package:sun_be_gone/utils/logger.dart';
 
 enum ErrorType {
   networkConnection,
@@ -24,7 +25,7 @@ class Errors {
     message = _getMessage(type);
 
     //log the error
-    print('Error: $error');
+    logger.e('Error', error);
   }
 
   String _getMessage(ErrorType type) {

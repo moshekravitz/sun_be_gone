@@ -345,13 +345,10 @@ class SunBusiness {
         }
 
         double distanceToLastPoint = e.distanceTo(lastReferencePoint.first);
-        //print('distanceToLastPoint is $distanceToLastPoint');
         double percentage = distanceToLastPoint / distanceBetween;
-        //print('percentage is $percentage');
 
         Duration timeToLastPoint =
             Duration(seconds: (timeBetween.inSeconds * percentage).round());
-        //print('timeToLastPoint is $timeToLastPoint\n');
 
         return Tuple(e, lastReferencePoint.second.add(timeToLastPoint));
       }));

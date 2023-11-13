@@ -2,35 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:sun_be_gone/ad_state.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 import 'package:sun_be_gone/views/homescreen/enter_search.dart';
 
-class Home extends StatefulWidget {
+class Home extends StatelessWidget {
   final OnSearchTapped onSearchTapped;
 
   const Home({super.key, required this.onSearchTapped});
-
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  BannerAd? banner;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final adState = Provider.of<AdState>(context);
-    adState.initialization.then((status) {
-      setState(() {
-        banner = BannerAd(
-          adUnitId: adState.bannerAdUnitId,
-          size: AdSize.banner,
-          request: const AdRequest(),
-          listener: adState.bannerAdListener,
-        )..load();
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +45,7 @@ class _HomeState extends State<Home> {
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
-                        EnterSearch(onSearchTapped: widget.onSearchTapped),
+                        EnterSearch(onSearchTapped: onSearchTapped),
                       ],
                     ),
                   ),
@@ -76,19 +54,58 @@ class _HomeState extends State<Home> {
             ),
           ),
           // ad
-          const SizedBox(
-            height: 10,
-          ),
-          if (banner != null)
-            Expanded(
-              child: AdWidget(ad: banner!),
-            )
-          else
-            const SizedBox(
-              height: 50,
+          Expanded(
+            child: Container(
+              constraints: const BoxConstraints.expand(),
+              child: LayoutBuilder(builder: (context, constraints) {
+                final containerHeight = constraints.maxHeight;
+                final containerWidth = constraints.maxWidth;
+                return HomeScreenAdWidget(
+                    size: Size(containerWidth, containerHeight));
+              }),
             ),
+          )
         ],
       ),
     );
+  }
+}
+
+class HomeScreenAdWidget extends StatefulWidget {
+  final Size size;
+
+  const HomeScreenAdWidget({super.key, required this.size});
+  @override
+  State<HomeScreenAdWidget> createState() => _HomeScreenAdWidgetState();
+}
+
+class _HomeScreenAdWidgetState extends State<HomeScreenAdWidget> {
+  BannerAd? banner;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final adState = Provider.of<AdState>(context);
+    adState.initialization.then((status) {
+      setState(() {
+        banner = BannerAd(
+          adUnitId: adState.bannerAdUnitId,
+          size: AdSize(
+            //width: MediaQuery.of(context).size.width.toInt(),
+            width: widget.size.width.toInt(),
+            height: widget.size.height.toInt(),
+          ),
+          request: const AdRequest(),
+          listener: adState.bannerAdListener,
+        )..load();
+        logger.i(
+            'banner size: hieght: ${banner!.size.height}, width: ${banner!.size.width}');
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return (banner == null) ? const SizedBox() : AdWidget(ad: banner!);
   }
 }

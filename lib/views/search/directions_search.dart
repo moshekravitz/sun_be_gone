@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sun_be_gone/models/nav_index.dart';
 
 typedef OnDepartureEditingComplete = void Function(String? text);
 typedef OnDirectionEditingComplete = void Function(String? , String?);
 
+@immutable
 class DirectoinsSearch extends StatefulWidget {
-  DirectoinsSearch({
+  const DirectoinsSearch({
     super.key,
     required this.onDirectionEditingComplete,
     required this.onDepartureEditingComplete,

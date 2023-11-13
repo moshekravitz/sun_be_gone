@@ -13,7 +13,7 @@ class RoutesListView extends StatefulWidget {
   final OnRoutePicked onRoutePicked;
   final DateTime dateTime;
   final bool isFavoritsList;
-  final Function(String)? onSlidePressed;
+  final Function(int)? onSlidePressed;
   const RoutesListView({
     Key? key,
     required this.routes,
@@ -38,7 +38,7 @@ class _RoutesListViewState extends State<RoutesListView> {
       setState(() {
         banner = BannerAd(
           adUnitId: adState.bannerAdUnitId,
-          size: AdSize.banner,
+          size: AdSize.fullBanner,
           request: const AdRequest(),
           listener: adState.bannerAdListener,
         )..load();
@@ -64,7 +64,7 @@ class _RoutesListViewState extends State<RoutesListView> {
                     children: [
                       SlidableAction(
                         onPressed: (context) => widget.onSlidePressed!(
-                            widget.routes.elementAt(index)!.routeId.toString()),
+                            widget.routes.elementAt(index)!.routeId),
                         label: widget.isFavoritsList
                             ? 'Remove from favorites'
                             : 'Add to favorites',
@@ -105,7 +105,6 @@ class _RoutesListViewState extends State<RoutesListView> {
                       ],
                     ),
                     onTap: () {
-                      print('onTap');
                       return widget.onRoutePicked(
                           widget.routes.elementAt(index)!.routeId,
                           widget.dateTime);
@@ -124,7 +123,7 @@ class _RoutesListViewState extends State<RoutesListView> {
           ),
         ),
         banner != null
-            ? Container(
+            ? SizedBox(
                 height: 50,
                 child: AdWidget(ad: banner!),
               )

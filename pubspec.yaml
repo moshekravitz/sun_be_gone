@@ -47,10 +47,14 @@ dependencies:
   shared_preferences: ^2.2.2
   flutter_slidable: ^3.0.1
   intl: ^0.18.1
-  logger: ^2.0.2+1
+  logger_plus: ^0.0.6+4
   google_mobile_ads: ^3.1.0
+  connectivity_plus: ^5.0.1
+  sqflite: ^2.3.0
+  path: ^1.8.3
 
 dev_dependencies:
+  sqflite_common_ffi:
   flutter_test:
     sdk: flutter
 

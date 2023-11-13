@@ -1,4 +1,3 @@
-import 'package:sun_be_gone/models/bus_routes.dart';
 import 'package:sun_be_gone/models/stop_time.dart';
 
 class ExtendedRoutes {

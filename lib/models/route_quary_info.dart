@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:sun_be_gone/models/stop_info.dart';
 import 'package:sun_be_gone/models/stop_time.dart';
 
@@ -16,6 +18,16 @@ class StopQuaryInfo {
     required this.stopInterval,
   });
 
+  factory StopQuaryInfo.fromJson(Map<String, dynamic> json) {
+    return StopQuaryInfo(
+      stopId: json['stopId'] as int,
+      stopName: json['stopName'] as String,
+      stopLat: json['stopLat'] as double,
+      stopLon: json['stopLon'] as double,
+      stopInterval: json['stopInterval'] as String,
+    );
+  }
+
   static Iterable<StopQuaryInfo> createStopQuaryInfo(
       Iterable<StopInfo> stopInfo, Iterable<StopTime> stopTimes) {
     List<StopQuaryInfo> stopQuaryInfo = [];
@@ -30,6 +42,16 @@ class StopQuaryInfo {
     }
     return stopQuaryInfo;
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'stopId': stopId,
+      'stopName': stopName,
+      'stopLat': stopLat,
+      'stopLon': stopLon,
+      'stopInterval': stopInterval,
+    };
+  }
 }
 
 class RouteQuaryInfo {
@@ -39,6 +61,7 @@ class RouteQuaryInfo {
   Iterable<StopQuaryInfo>? stopQuaryInfo;
   Iterable<StopQuaryInfo>? fullStopQuaryInfo;
   DateTime? dateTime;
+  bool? fromLocal;
 
   RouteQuaryInfo({
     required this.routeId,
@@ -47,6 +70,7 @@ class RouteQuaryInfo {
     required this.stopQuaryInfo,
     required this.fullStopQuaryInfo,
     required this.dateTime,
+    required this.fromLocal,
   });
 
   RouteQuaryInfo.empty() {
@@ -56,11 +80,24 @@ class RouteQuaryInfo {
     stopQuaryInfo = null;
     fullStopQuaryInfo = null;
     dateTime = null;
+    fromLocal = null;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'routeId': routeId,
+      'routeHeadSign': routeHeadSign,
+      'shapeId': shapeId,
+      'stopQuaryInfo': stopQuaryInfo,
+      'fullStopQuaryInfo': fullStopQuaryInfo,
+      'dateTime': dateTime,
+      'fromLocal': fromLocal,
+    };
   }
 
   @override
   String toString() {
-    return 'RouteQuaryInfo{routeId: $routeId, routeHeadSign: $routeHeadSign, shapeStr: $shapeId, stopQuaryInfo: $stopQuaryInfo, fullStopQuaryInfo: $fullStopQuaryInfo, currentTime: $dateTime}';
+    return 'RouteQuaryInfo{routeId: $routeId, routeHeadSign: $routeHeadSign, shapeStr: $shapeId, stopQuaryInfo: $stopQuaryInfo, fullStopQuaryInfo: $fullStopQuaryInfo, currentTime: $dateTime, fromLocal: $fromLocal}';
   }
 
   bool quaryInfoIsReady() {
@@ -69,12 +106,13 @@ class RouteQuaryInfo {
 
   RouteQuaryInfo copyWithObj({required RouteQuaryInfo quaryInfo}) {
     return RouteQuaryInfo(
-      routeId: quaryInfo.routeId ?? this.routeId,
-      routeHeadSign: quaryInfo.routeHeadSign ?? this.routeHeadSign,
-      shapeId: quaryInfo.shapeId ?? this.shapeId,
-      stopQuaryInfo: quaryInfo.stopQuaryInfo ?? this.stopQuaryInfo,
-      fullStopQuaryInfo: quaryInfo.fullStopQuaryInfo ?? this.fullStopQuaryInfo,
-      dateTime: quaryInfo.dateTime ?? this.dateTime,
+      routeId: quaryInfo.routeId ?? routeId,
+      routeHeadSign: quaryInfo.routeHeadSign ?? routeHeadSign,
+      shapeId: quaryInfo.shapeId ?? shapeId,
+      stopQuaryInfo: quaryInfo.stopQuaryInfo ?? stopQuaryInfo,
+      fullStopQuaryInfo: quaryInfo.fullStopQuaryInfo ?? fullStopQuaryInfo,
+      fromLocal: quaryInfo.fromLocal ?? fromLocal,
+      dateTime: quaryInfo.dateTime ?? dateTime,
     );
   }
 
@@ -86,6 +124,7 @@ class RouteQuaryInfo {
     List<StopQuaryInfo>? stopQuaryInfo,
     List<StopQuaryInfo>? fullStopQuaryInfo,
     DateTime? dateTime,
+    bool? fromLocal,
   }) {
     return RouteQuaryInfo(
       routeId: routeId ?? this.routeId,
@@ -94,6 +133,7 @@ class RouteQuaryInfo {
       stopQuaryInfo: stopQuaryInfo ?? this.stopQuaryInfo,
       fullStopQuaryInfo: fullStopQuaryInfo ?? this.fullStopQuaryInfo,
       dateTime: dateTime ?? this.dateTime,
+      fromLocal: fromLocal ?? this.fromLocal,
     );
   }
 }

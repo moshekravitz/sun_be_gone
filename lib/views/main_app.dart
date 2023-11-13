@@ -5,6 +5,7 @@ import 'package:sun_be_gone/bloc/app_bloc.dart';
 import 'package:sun_be_gone/bloc/app_state.dart';
 import 'package:sun_be_gone/bloc/nav_index_cubit.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 import 'package:sun_be_gone/views/bookmarks/bookmarks_page.dart';
 import 'package:sun_be_gone/views/homescreen/home.dart';
 import 'package:sun_be_gone/views/results/loading_result.dart';
@@ -23,7 +24,7 @@ class MainApp extends StatelessWidget {
             previous.pageIndex != current.pageIndex,
         builder: (context, navIndex) {
           if (appState is InitState && !appState.isInitialized) {
-            print('init state Not init');
+            logger.i('init state Not init');
             context.read<AppBloc>().add(const InitAppAction());
           }
           return navIndex.pageIndex == Pages.entry

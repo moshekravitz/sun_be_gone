@@ -6,6 +6,7 @@ import 'dart:convert' show json, jsonDecode;
 import 'package:http/http.dart' as http;
 import 'package:sun_be_gone/models/api_response.dart';
 import 'package:sun_be_gone/services/http_url.dart' show HttpUrl;
+import 'package:sun_be_gone/utils/logger.dart';
 
 @immutable
 abstract class ServerConnectionApiProtocol {
@@ -16,10 +17,9 @@ abstract class ServerConnectionApiProtocol {
 
 @immutable
 class MockServerConnectionApi implements ServerConnectionApiProtocol {
-
   @override
   Future<ApiResponse<String>> checkLive() {
-    print('mocking check live api request');
+    logger.i('mocking check live api request');
     return Future.delayed(
       const Duration(seconds: 2),
       () => ApiResponse(
@@ -30,8 +30,9 @@ class MockServerConnectionApi implements ServerConnectionApiProtocol {
     );
   }
 
+  @override
   Future<ApiResponse<String>> checkHealth() {
-    print('mocking ckeck health api request');
+    logger.i('mocking ckeck health api request');
     return Future.delayed(
       const Duration(seconds: 2),
       () => ApiResponse(
@@ -52,10 +53,10 @@ class ServerConnectionApi implements ServerConnectionApiProtocol {
     );
 
     if (response.statusCode == 200) {
-      print('status code for live check: ${response.statusCode}');
+      logger.i('status code for live check: ${response.statusCode}');
     } else {
-      print(response.statusCode);
-      print(response.reasonPhrase);
+      logger.i(response.statusCode);
+      logger.i(response.reasonPhrase);
     }
 
     return ApiResponse(
@@ -71,10 +72,10 @@ class ServerConnectionApi implements ServerConnectionApiProtocol {
     );
 
     if (response.statusCode == 200) {
-      print('status code for ready check: ${response.statusCode}');
+      logger.i('status code for ready check: ${response.statusCode}');
     } else {
-      print(response.statusCode);
-      print(response.reasonPhrase);
+      logger.i(response.statusCode);
+      logger.i(response.reasonPhrase);
     }
 
     final parsed = jsonDecode(response.body);
@@ -86,7 +87,8 @@ class ServerConnectionApi implements ServerConnectionApiProtocol {
     );
   }
 
-  static void sendErrorToServer(dynamic error, StackTrace? stackTrace) {
+  static void sendErrorToServer(
+      dynamic error, StackTrace? stackTrace, String? logs) {
     final url = Uri.parse(HttpUrl.serverUrl('/error'));
     final headers = <String, String>{
       'Content-Type': 'application/json',
@@ -95,20 +97,10 @@ class ServerConnectionApi implements ServerConnectionApiProtocol {
     final body = <String, dynamic>{
       'error': error.toString(),
       'stack_trace': stackTrace.toString(),
+      'logs': logs,
     };
 
     // Send a POST request to your logging server
     http.post(url, headers: headers, body: json.encode(body));
-    /*
-    .then((response) {
-      if (response.statusCode == 200) {
-        // The error was successfully sent to the server
-        print('Error logged successfully');
-      } else {
-        // Error logging failed
-        print('Error logging failed');
-      }
-    });
-    */
   }
 }

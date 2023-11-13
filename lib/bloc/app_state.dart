@@ -65,10 +65,10 @@ class ResultsState extends DataState {
 
 class BookmarksState extends AppState {
   final List<BusRoutes> favoriteRoutes;
-  final List<BusRoutes> hisrotyRoutes;
+  final List<BusRoutes> historyRoutes;
   const BookmarksState({
     required this.favoriteRoutes,
-    required this.hisrotyRoutes,
+    required this.historyRoutes,
   });
 }
 

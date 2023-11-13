@@ -14,10 +14,10 @@ class StopsListView extends StatefulWidget {
   final Iterable<StopQuaryInfo> stops;
   //add callback for setting departure and destination indexes
 
-  void Function(int) setDepartureIndex;
-  void Function(int) setDestinationIndex;
+  final void Function(int) setDepartureIndex;
+  final void Function(int) setDestinationIndex;
 
-  StopsListView({
+  const StopsListView({super.key, 
     required this.stops,
     required this.setDepartureIndex,
     required this.setDestinationIndex,
@@ -36,7 +36,7 @@ class _StopsListViewState extends State<StopsListView> {
   @override
   void initState() {
     super.initState();
-    busStops = widget.stops.map((e) => BusStop(e!.stopName, false)).toList();
+    busStops = widget.stops.map((e) => BusStop(e.stopName, false)).toList();
   }
 
   void selectStop(int index) {
@@ -83,7 +83,7 @@ class _StopsListViewState extends State<StopsListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Bus Stops Selection"),
+        title: const Text("Bus Stops Selection"),
       ),
       body: ListView.builder(
         itemCount: busStops.length,

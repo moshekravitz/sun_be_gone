@@ -9,7 +9,7 @@ typedef ButtonPressedCallback = void Function();
 class StopPicker {
   // singleton pattern
   StopPicker._sharedInstance();
-  static late final StopPicker _shared = StopPicker._sharedInstance();
+  static final StopPicker _shared = StopPicker._sharedInstance();
   factory StopPicker.instance() => _shared;
 
   late StopPickerController? _controller;

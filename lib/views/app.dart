@@ -7,9 +7,11 @@ import 'package:sun_be_gone/bloc/bookmarks_bloc.dart';
 import 'package:sun_be_gone/bloc/bus_routes_bloc.dart';
 import 'package:sun_be_gone/bloc/date_time_cubit.dart';
 import 'package:sun_be_gone/bloc/nav_index_cubit.dart';
+import 'package:sun_be_gone/data/sqlite_db.dart';
 import 'package:sun_be_gone/dialogs/generic_dialog.dart';
 import 'package:sun_be_gone/dialogs/loading_screen.dart';
 import 'package:sun_be_gone/dialogs/stop_picker_dialog.dart';
+import 'package:sun_be_gone/models/errors.dart';
 import 'package:sun_be_gone/models/nav_index.dart';
 import 'package:sun_be_gone/services/bus_extended_route_api.dart';
 import 'package:sun_be_gone/services/bus_routes_api.dart';
@@ -17,6 +19,7 @@ import 'package:sun_be_gone/services/bus_shape_api.dart';
 import 'package:sun_be_gone/services/bus_stops_api.dart';
 import 'package:sun_be_gone/services/results_api.dart';
 import 'package:sun_be_gone/services/server_connection_api.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 import 'package:sun_be_gone/views/main_app.dart';
 
 class App extends StatelessWidget {
@@ -46,6 +49,9 @@ class App extends StatelessWidget {
               busShapeApi: BusShapeApi(),
               resultsApi: ResultsApi(),
               serverConnectionApi: ServerConnectionApi(),
+              busRoutesQuaryDB: BusRoutesQuaryDB(),
+              favoritesIdsDB: FavoritesIdsDB(),
+              historyIdsDB: HistoryIdsDB(),
             ),
           ),
           BlocProvider(
@@ -74,7 +80,7 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AppBloc, AppState>(
       listener: (context, appState) {
-        print('app stata: $appState');
+        logger.i('app stata: $appState');
         if (appState is ErrorState) {
           showGenericDialog<bool>(
             context: context,
@@ -83,27 +89,32 @@ class MainScreen extends StatelessWidget {
             optionsBuilder: () => {'OK': true},
           );
           context.read<NavIndexCubit>().setIndex(const NavIndex(Pages.home));
+          if (appState.error.type == ErrorType.networkConnection) {
+            context.read<AppBloc>().add(const InitAppAction());
+          } else {
+            //logger.e(appState.error);
+          }
         }
 
         if (appState is IsLoadingState) {
-          print('is loading state');
+          logger.i('is loading state');
           LoadingScreen.instance().show(
             context: context,
             text: 'please wait',
           );
         } else {
-          print('is not loading state');
+          logger.i('is not loading state');
           LoadingScreen.instance().hide();
         }
 
         if (appState is InitState) {
           if (appState.isInitialized) {
-            print('init state is init');
+            logger.i('init state is init');
             context.read<NavIndexCubit>().setIndex(const NavIndex(Pages.home));
             //context.read<AppBloc>().add(const InitAppAction());
             //context.read<AppBloc>().add(const GetRoutesAction());
           } else {
-            print('init state Not init from listener');
+            logger.i('init state Not init from listener');
             LoadingScreen.instance().show(
               context: context,
               text: 'please wait',
@@ -143,7 +154,7 @@ class MainScreen extends StatelessWidget {
 
         if (appState is BookmarksState) {
           context.read<BookMarksCubit>().init(appState.favoriteRoutes);
-          context.read<RoutesHistoryCubit>().init(appState.hisrotyRoutes);
+          context.read<RoutesHistoryCubit>().init(appState.historyRoutes);
           context
               .read<NavIndexCubit>()
               .setIndex(const NavIndex(Pages.bookmarks));

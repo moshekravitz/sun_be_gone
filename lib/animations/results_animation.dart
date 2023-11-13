@@ -16,8 +16,6 @@ class AnimatedCurvedProgressBar extends StatefulWidget {
 class _AnimatedCurvedProgressBarState extends State<AnimatedCurvedProgressBar>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  //late AnimationController _secondAnimationController;
-  Offset? asdff;
 
   @override
   void initState() {
@@ -28,9 +26,6 @@ class _AnimatedCurvedProgressBarState extends State<AnimatedCurvedProgressBar>
     );
 
     _animationController.forward(); // Start the first animation.
-    //Future.delayed(Duration(seconds: 4), () {
-    // _secondAnimationController.forward(); // Start the first animation.
-    //});
   }
 
   @override
@@ -69,7 +64,7 @@ class StaggeredAnimation extends StatelessWidget {
   final SittingInfo sittingInfo;
   late final String _sittingPosition;
 
-  StaggeredAnimation({required this.controller, required this.sittingInfo})
+  StaggeredAnimation({super.key, required this.controller, required this.sittingInfo})
       : firstPhaseAnimation = Tween<double>(
           begin: 0.0,
           end: 1.0,

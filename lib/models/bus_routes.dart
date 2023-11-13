@@ -1,6 +1,3 @@
-import 'package:sun_be_gone/models/extended_routes.dart';
-import 'package:sun_be_gone/models/stop_info.dart';
-import 'package:sun_be_gone/models/stop_time.dart';
 
 class BusRoutes {
   int routeId;
@@ -37,6 +34,18 @@ class BusRoutes {
       routeLongName: json['routeLongName'] as String,
     );
   }
+
+  //bus Route to map
+  Map<String, dynamic> toMap() {
+    return {
+      'routeId': routeId,
+      'routeShortName': routeShortName,
+      'routeLongName': routeLongName,
+    };
+  }
+
+
+
   String prettyString() {
     List<String> strs = routeLongName.split('-');
 

@@ -20,8 +20,8 @@ class StopInfo {
     return StopInfo(
       stopId: json['stopId'] as int,
       stopName: json['stopName'] as String,
-      stopLat: json['stopLat'].toDouble(), //TODO change to: as double
-      stopLon: json['stopLon'].toDouble(), //TODO change to: as double
+      stopLat: json['stopLat'].toDouble(),
+      stopLon: json['stopLon'].toDouble(),
     );
   }
 }

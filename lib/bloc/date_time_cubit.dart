@@ -1,6 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:sun_be_gone/bloc/actions.dart';
-import 'package:sun_be_gone/bloc/app_state.dart';
 import 'package:sun_be_gone/models/route_quary_info.dart';
 
 class DataAction {

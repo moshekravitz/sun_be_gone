@@ -1,7 +1,5 @@
 // bottom_nav_bar.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sun_be_gone/models/nav_index.dart';
 
 typedef OnBottomNavBarTap = void Function(int);
 

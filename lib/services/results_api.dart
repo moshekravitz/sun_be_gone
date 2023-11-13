@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:sun_be_gone/models/api_response.dart';
+import 'package:sun_be_gone/utils/logger.dart';
 import 'package:sun_business/sun_business.dart';
 
 @immutable
@@ -23,7 +24,7 @@ class ResultsApi implements ResultsApiProtocol {
       SittingInfo result = await sunBusiness.whereToSitMulti(
           shapeStr, points, dateTime);
       stopwatch.stop();
-      print('Time taken in resultsApi: ${stopwatch.elapsedMilliseconds} ms');
+      logger.i('Time taken in resultsApi: ${stopwatch.elapsedMilliseconds} ms');
       return ApiResponse<SittingInfo>(statusCode: 200, data: result);
     } catch (e) {
       return ApiResponse<SittingInfo>.bad(statusCode: 500, error: e.toString());
