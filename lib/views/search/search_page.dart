@@ -4,6 +4,7 @@ import 'package:sun_be_gone/bloc/actions.dart';
 import 'package:sun_be_gone/bloc/app_bloc.dart';
 import 'package:sun_be_gone/bloc/bus_routes_bloc.dart';
 import 'package:sun_be_gone/bloc/date_time_cubit.dart';
+import 'package:sun_be_gone/models/bus_routes.dart';
 import 'package:sun_be_gone/utils/logger.dart';
 import 'package:sun_be_gone/views/search/directions_search.dart';
 import 'package:sun_be_gone/views/search/lines_search.dart';
@@ -12,7 +13,7 @@ import 'package:sun_be_gone/widgets/build_date_time.dart';
 
 class SearchPage extends StatefulWidget {
   final OnRoutePicked onRoutePicked;
-  final Function(int) onSlidePressed;
+  final Function(BusRoutes) onSlidePressed;
   //Iterable<BusRoutes?>? routes;
   const SearchPage({
     super.key,

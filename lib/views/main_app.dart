@@ -51,22 +51,22 @@ class MainApp extends StatelessWidget {
                             onSlidePressedRemoveFav: (value) => context
                                 .read<AppBloc>()
                                 .add(RemoveRouteFromFavoritesAction(
-                                    routeId: value)),
+                                    routeId: value.routeId)),
                             onSlidePressedAddFav: (value) => context
                                 .read<AppBloc>()
-                                .add(AddRouteToFavoritsAction(routeId: value)),
+                                .add(AddRouteToFavoritsAction(busRoute: value)),
                             onRoutePicked: (value, dateTime) => context
                                 .read<AppBloc>()
                                 .add(GetStopsAction(
-                                    routeId: value, dateTime: dateTime)),
+                                    busRoute: value, dateTime: dateTime)),
                           ),
                         Pages.search => SearchPage(
                             onSlidePressed: (value) => context
                                 .read<AppBloc>()
-                                .add(AddRouteToFavoritsAction(routeId: value)),
+                                .add(AddRouteToFavoritsAction(busRoute: value)),
                             onRoutePicked: (value, dateTime) {
                               context.read<AppBloc>().add(GetStopsAction(
-                                  routeId: value, dateTime: dateTime));
+                                  busRoute: value, dateTime: dateTime));
                               //context.read<AppBloc>().add(AddRouteToHistoryAction(
                               //   routeId: value.toString()));
                             },

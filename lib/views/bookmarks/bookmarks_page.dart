@@ -10,8 +10,8 @@ class BookmarksPage extends StatelessWidget {
   //final Iterable<BusRoutes> historyRoutes;
   //final Iterable<BusRoutes> bookmarkedRoutes;
   final OnRoutePicked onRoutePicked;
-  final Function(int) onSlidePressedAddFav;
-  final Function(int) onSlidePressedRemoveFav;
+  final Function(BusRoutes) onSlidePressedAddFav;
+  final Function(BusRoutes) onSlidePressedRemoveFav;
 
   const BookmarksPage({
     super.key,

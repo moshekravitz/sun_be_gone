@@ -73,8 +73,8 @@ class AppBloc extends Bloc<AppAction, AppState> {
           ));
         }
 
-        //routesResponse = await BusRoutesDBInterface().getBusRoutes();
         routes = await busRoutesDB.getBusRoutes();
+        logger.i('got routes from local db, length: ${routes.length}');
         AppCache.instance().busRoutes = routes;
       } catch (e) {
         logger.e('routes api gave an error', e);
@@ -146,7 +146,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
 
       //try to get routeQuaryInfo from local db
       RoutesQuaryData? routeQuaryDb =
-          await busRoutesQuaryDB.getRouteQuaryInfo(event.routeId);
+          await busRoutesQuaryDB.getRouteQuaryInfo(event.busRoute.routeId);
       if (routeQuaryDb != null) {
         var routeQuaryInfo = RouteQuaryInfo(
           routeId: routeQuaryDb.routeId,
@@ -167,8 +167,15 @@ class AppBloc extends Bloc<AppAction, AppState> {
         return;
       }
 
+      //add bus Route to busRoutes
+      try {
+        await busRoutesDB.saveBusRoute(event.busRoute);
+      } catch (e) {
+        logger.e('failed to save bus route to local db', e);
+      }
+
       final extendedRoutesResponse =
-          await extendedRoutesApi.getExtendedRoutes(event.routeId);
+          await extendedRoutesApi.getExtendedRoutes(event.busRoute.routeId);
       if (extendedRoutesResponse.data == null) {
         logger.i('extendedRoutes api gave an error');
         emit(ErrorState(
@@ -201,7 +208,7 @@ class AppBloc extends Bloc<AppAction, AppState> {
       );
 
       RouteQuaryInfo quaryInfo = RouteQuaryInfo(
-        routeId: event.routeId,
+        routeId: event.busRoute.routeId,
         routeHeadSign: extendedRoutesResponse.data!.routeHeadSign,
         shapeId: extendedRoutesResponse.data!.shapeId,
         fullStopQuaryInfo: fullStopQuaryInfo.toList(),
@@ -267,11 +274,27 @@ class AppBloc extends Bloc<AppAction, AppState> {
         dateTime = event.quaryInfo.dateTime!;
       }
 
+      int departureIndex;
+      int destinationIndex;
+      if (event.quaryInfo.departureIndex == -1 &&
+          event.quaryInfo.destinationIndex == -1) {
+        //departure and destination not given
+        departureIndex = 0;
+        destinationIndex = event.quaryInfo.fullStopQuaryInfo!.length - 1;
+      } else if (event.quaryInfo.destinationIndex == -1) {
+        // only one stop input - destination is beggining, departure is the input
+        departureIndex = 0;
+        destinationIndex = event.quaryInfo.fullStopQuaryInfo!.length - 1;
+      } else {
+        //both stops given
+        departureIndex = event.quaryInfo.departureIndex!;
+        destinationIndex = event.quaryInfo.destinationIndex! + 1;
+      }
+
       List<(Point, DateTime)> poinsWithTime = createPointsTimeTuple(
-              event.quaryInfo.fullStopQuaryInfo!.toList().sublist(
-                    event.quaryInfo.departureIndex!,
-                    event.quaryInfo.destinationIndex! + 1,
-                  ),
+              event.quaryInfo.fullStopQuaryInfo!
+                  .toList()
+                  .sublist(departureIndex, destinationIndex),
               event.quaryInfo.fullStopQuaryInfo!.first,
               dateTime)
           .toList();
@@ -394,14 +417,13 @@ class AppBloc extends Bloc<AppAction, AppState> {
 
       BusRoutes busRoute;
       try {
-        /*
-        await AppData.addBookmark(event.routeId);
-        */
-        int saveFavRes = await favoritesIdsDB.saveFavoriteId(event.routeId);
+        int saveFavRes =
+            await favoritesIdsDB.saveFavoriteId(event.busRoute.routeId);
         logger.i('saveFavRes: $saveFavRes');
         busRoute = AppCache.instance()
             .busRoutes!
-            .firstWhere((element) => element.routeId == event.routeId);
+            .firstWhere((element) => element.routeId == event.busRoute.routeId);
+        await busRoutesDB.saveBusRoute(busRoute);
       } catch (e) {
         logger.e('error in AddToBookmarksAction error', e);
         emit(ErrorState(

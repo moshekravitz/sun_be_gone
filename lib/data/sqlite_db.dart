@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sun_be_gone/models/bus_route_full_data.dart';
 import 'package:sun_be_gone/models/bus_routes.dart';
 import 'package:sqflite/sqflite.dart';
@@ -24,7 +25,9 @@ class SQLiteDB {
   initDB() async {
     //what platform are we running on?
     if (Platform.isIOS || Platform.isAndroid) {
-      final String databasesPath = await getDatabasesPath();
+      Directory documentsDirectory = await getApplicationDocumentsDirectory();
+      //final String databasesPath = await getDatabasesPath();
+      final String databasesPath = documentsDirectory.path;
       String path = join(databasesPath, 'demo.db');
       return await openDatabase(path, version: 1, onCreate: _onCreate);
     } else {

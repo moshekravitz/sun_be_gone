@@ -39,9 +39,10 @@ class GetExtendedRouteAction extends AppAction {
 
 @immutable
 class GetStopsAction extends AppAction {
-  final int routeId;
+  //final int routeId;
+  final BusRoutes busRoute;
   final DateTime? dateTime;
-  const GetStopsAction({required this.routeId, this.dateTime});
+  const GetStopsAction({required this.busRoute, this.dateTime});
 }
 
 class DateTimePickedAction extends AppAction {
@@ -73,8 +74,9 @@ class NavigatedToBookmarksAction extends AppAction {
 
 @immutable
 class AddRouteToFavoritsAction extends AppAction {
-  final int routeId;
-  const AddRouteToFavoritsAction({required this.routeId});
+  //final int routeId;
+  final BusRoutes busRoute;
+  const AddRouteToFavoritsAction({required this.busRoute});
 }
 
 @immutable
@@ -85,8 +87,9 @@ class RemoveRouteFromFavoritesAction extends AppAction {
 
 @immutable
 class AddRouteToHistoryAction extends AppAction {
-  final int routeId;
-  const AddRouteToHistoryAction({required this.routeId});
+  //final int routeId;
+  final BusRoutes busRoute;
+  const AddRouteToHistoryAction({required this.busRoute});
 }
 
 @immutable

@@ -6,14 +6,14 @@ import 'package:sun_be_gone/ad_state.dart';
 import 'package:sun_be_gone/models/bus_routes.dart';
 
 typedef OnStopPicked = void Function();
-typedef OnRoutePicked = void Function(int, DateTime);
+typedef OnRoutePicked = void Function(BusRoutes, DateTime);
 
 class RoutesListView extends StatefulWidget {
   final Iterable<BusRoutes?> routes;
   final OnRoutePicked onRoutePicked;
   final DateTime dateTime;
   final bool isFavoritsList;
-  final Function(int)? onSlidePressed;
+  final Function(BusRoutes)? onSlidePressed;
   const RoutesListView({
     Key? key,
     required this.routes,
@@ -64,7 +64,7 @@ class _RoutesListViewState extends State<RoutesListView> {
                     children: [
                       SlidableAction(
                         onPressed: (context) => widget.onSlidePressed!(
-                            widget.routes.elementAt(index)!.routeId),
+                            widget.routes.elementAt(index)!),
                         label: widget.isFavoritsList
                             ? 'Remove from favorites'
                             : 'Add to favorites',
@@ -106,7 +106,7 @@ class _RoutesListViewState extends State<RoutesListView> {
                     ),
                     onTap: () {
                       return widget.onRoutePicked(
-                          widget.routes.elementAt(index)!.routeId,
+                          widget.routes.elementAt(index)!,
                           widget.dateTime);
                     },
                   ),
