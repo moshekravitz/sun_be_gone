@@ -39,7 +39,7 @@ class _RoutesListViewState extends State<RoutesListView> {
       setState(() {
         banner = BannerAd(
           adUnitId: adState.bannerAdUnitId,
-          size: AdSize.fullBanner,
+          size: AdSize.banner,
           request: const AdRequest(),
           listener: adState.bannerAdListener,
         )..load();
