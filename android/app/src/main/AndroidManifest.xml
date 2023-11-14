@@ -2,9 +2,11 @@
     <!-- Required to fetch data from the internet. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="sun_be_gone"
+        android:label="sunBeGone"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+    
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
         <activity
             android:name=".MainActivity"
             android:exported="true"

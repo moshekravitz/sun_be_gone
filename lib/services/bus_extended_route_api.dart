@@ -30,7 +30,7 @@ class MockExtendedRouteApi implements ExtendedRouteApiProtocol {
 class ExtendedRouteApi implements ExtendedRouteApiProtocol {
   @override
   Future<ApiResponse<ExtendedRoutes?>> getExtendedRoutes(int routeId) async {
-    var headers = {'APIKEY': '1234'};
+    var headers = {'APIKEY': HttpUrl.apiKey};
     var response = await http.get(
       Uri.parse(HttpUrl.serverUrl('/api/ExtendedRoutes/id?routeId=$routeId')),
       headers: headers,

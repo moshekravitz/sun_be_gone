@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:logger_plus/logger_plus.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,8 @@ import 'package:sun_be_gone/views/app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await dotenv.load(fileName: '.env');
+
   Stream loggerStream = Logger.addOutputListener().asBroadcastStream();
   String logs = '';
   loggerStream.listen((event) {
@@ -22,7 +25,6 @@ void main() async {
     }
   });
 
-/*
   FlutterError.onError = (details) async {
     logger.i('details context: ${details.context}');
     logger.e('FlutterError.onError stack: ${details.stack}', details.exception);
@@ -38,10 +40,7 @@ void main() async {
     // Send a POST request to your logging server
     ServerConnectionApi.sendErrorToServer(error, stackTrace, logs);
 
-    // You can also choose to crash the app by uncommenting the following line
-    // FlutterError.dumpErrorToConsole(details, forceCrash: true);
   };
-  */
 
   final initFuture = MobileAds.instance.initialize();
   final adState = AdState(initFuture);

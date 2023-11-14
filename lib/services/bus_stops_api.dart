@@ -35,7 +35,7 @@ class BusStopsApi implements BusStopsApiProtocol {
       ExtendedRoutes extendedRoutes) async {
     List<int> stopIds = extendedRoutes.stopTimes.map((e) => e.stopId).toList();
     String stopIdsComaSeparated = stopIds.join(',');
-    var headers = {'APIKEY': '1234'};
+    var headers = {'APIKEY': HttpUrl.apiKey};
     var response = await http.get(
       Uri.parse(HttpUrl.serverUrl(
           '/api/stopInfo/idList?stopIdL=$stopIdsComaSeparated')),

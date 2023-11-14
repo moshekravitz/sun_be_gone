@@ -33,7 +33,7 @@ class MockShapeApi implements BusShapeApiProtocol {
 class BusShapeApi implements BusShapeApiProtocol {
   @override
   Future<ApiResponse<String>> getShapes(int shapeId) async {
-    var headers = {'APIKEY': '1234'};
+    var headers = {'APIKEY': HttpUrl.apiKey};
     var response = await http.get(
       Uri.parse(HttpUrl.serverUrl('/api/Shapes/id?shapeId=$shapeId')),
       headers: headers,
