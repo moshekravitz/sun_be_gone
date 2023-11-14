@@ -22,6 +22,7 @@ void main() async {
     }
   });
 
+/*
   FlutterError.onError = (details) async {
     logger.i('details context: ${details.context}');
     logger.e('FlutterError.onError stack: ${details.stack}', details.exception);
@@ -40,6 +41,7 @@ void main() async {
     // You can also choose to crash the app by uncommenting the following line
     // FlutterError.dumpErrorToConsole(details, forceCrash: true);
   };
+  */
 
   final initFuture = MobileAds.instance.initialize();
   final adState = AdState(initFuture);

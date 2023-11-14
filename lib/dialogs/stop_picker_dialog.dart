@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sun_be_gone/dialogs/stop_picker_dialog_controller.dart';
 import 'package:sun_be_gone/dialogs/stops_list_view.dart';
 import 'package:sun_be_gone/models/route_quary_info.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef ButtonPressedCallback = void Function();
 
@@ -58,13 +59,14 @@ class StopPicker {
     required Function(int) setDepartureIndex,
     required Function(int) setDestinationIndex,
   }) {
-
     final state = Overlay.of(context);
     final renderBox = context.findRenderObject() as RenderBox;
     final size = renderBox.size;
 
     final overlay = OverlayEntry(
       builder: (context) {
+        final String dialogGo = AppLocalizations.of(context)!.dialogGo;
+        final String dialogCancel = AppLocalizations.of(context)!.dialogCancel;
         return Material(
           color: Colors.black.withAlpha(150),
           child: Center(
@@ -97,7 +99,7 @@ class StopPicker {
                       children: [
                         TextButton(
                           onPressed: onCancelButton,
-                          child: const Text('Cancel'),
+                          child: Text(dialogCancel),
                         ),
                         const SizedBox(width: 5),
                         TextButton(
@@ -106,7 +108,7 @@ class StopPicker {
                             foregroundColor: Colors.white,
                           ),
                           onPressed: onCloseButton,
-                          child: const Text('Go'),
+                          child: Text(dialogGo),
                         ),
                       ],
                     ),

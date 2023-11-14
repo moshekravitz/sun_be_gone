@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sun_be_gone/models/route_quary_info.dart' show StopQuaryInfo;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BusStop {
   final String name;
@@ -92,9 +93,10 @@ class _StopsListViewState extends State<StopsListView> {
 
   @override
   Widget build(BuildContext context) {
+    final String stopTitle = AppLocalizations.of(context)!.stopsDialogTitle;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Bus Stops Selection"),
+        title: Text(stopTitle),
       ),
       body: ListView.builder(
         itemCount: busStops.length,

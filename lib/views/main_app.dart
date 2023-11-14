@@ -12,6 +12,7 @@ import 'package:sun_be_gone/views/results/loading_result.dart';
 import 'package:sun_be_gone/views/search/search_page.dart';
 import 'package:sun_be_gone/widgets/bottom_navigation.dart';
 import 'package:sun_be_gone/widgets/splash_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -27,19 +28,22 @@ class MainApp extends StatelessWidget {
             logger.i('init state Not init');
             context.read<AppBloc>().add(const InitAppAction());
           }
+          final String notFoundText = AppLocalizations.of(context)!.notFound;
+          final String errorString =
+              AppLocalizations.of(context)!.dialogErrorTitle;
           return navIndex.pageIndex == Pages.entry
               ? const SplashScreen()
               : navIndex.pageIndex == Pages.error
-                  ? const Scaffold(
+                  ? Scaffold(
                       body: Center(
-                        child: Text('Error'),
+                        child: Text(errorString),
                       ),
                     )
                   : Scaffold(
                       appBar: AppBar(
                         title: Center(
                           //child: Text(pagesNames[navIndex.index]),
-                          child: Text(navIndex.name),
+                          child: Text(navIndex.name(context)),
                         ),
                       ),
                       body: switch (navIndex.pageIndex) {
@@ -76,8 +80,7 @@ class MainApp extends StatelessWidget {
                                 (appState as ResultsState).sittingInfo!),
                         (_) => Scaffold(
                             body: Center(
-                              child: Text(
-                                  'No route defined for ${navIndex.pageIndex.name}'),
+                              child: Text(notFoundText),
                             ),
                           ),
                       },

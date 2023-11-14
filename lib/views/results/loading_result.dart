@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sun_be_gone/animations/results_animation.dart';
 import 'package:sun_be_gone/dialogs/generic_dialog.dart';
 import 'package:sun_business/sun_business.dart' show SittingInfo;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoadingResult extends StatelessWidget {
   final SittingInfo sittingInfo;
@@ -10,6 +11,11 @@ class LoadingResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String dialogInfoTitle =
+        AppLocalizations.of(context)!.dialogInfoTitle;
+    final String dialogInfoContent =
+        AppLocalizations.of(context)!.resultDialogContent;
+    final String dialogOk = AppLocalizations.of(context)!.dialogOk;
     return Scaffold(
       body: Stack(
         children: [
@@ -21,10 +27,9 @@ class LoadingResult extends StatelessWidget {
               icon: const Icon(Icons.help),
               onPressed: () => showGenericDialog<bool>(
                 context: context,
-                title: 'Info',
-                content:
-                    'Left means sit on the drivers side of the bus, right means sit at the side of the doors.',
-                optionsBuilder: () => {'OK': true},
+                title: dialogInfoTitle,
+                content: dialogInfoContent,
+                optionsBuilder: () => {dialogOk: true},
               ),
             ),
           ),

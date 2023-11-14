@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef OnSubmittedLine = void Function(String? value);
 
@@ -29,6 +30,7 @@ class _LinesSearchState extends State<LinesSearch> {
 
   @override
   Widget build(BuildContext context) {
+    String lineHint = AppLocalizations.of(context)!.lineNumberHint;
     return Container(
       color: Colors.white,
       child: Column(
@@ -46,10 +48,10 @@ class _LinesSearchState extends State<LinesSearch> {
             child: TextField(
               controller: _controller,
               textInputAction: TextInputAction.go,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none, // Remove the default border
-                hintText: 'line numbe',
-                contentPadding: EdgeInsets.symmetric(
+                hintText: lineHint,
+                contentPadding: const EdgeInsets.symmetric(
                     horizontal: 10), // Optional: Adjust text padding
               ),
               style: const TextStyle(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef OnDepartureEditingComplete = void Function(String? text);
 typedef OnDirectionEditingComplete = void Function(String? , String?);
@@ -38,6 +39,8 @@ class _DirectoinsSearchState extends State<DirectoinsSearch> {
 
   @override
   Widget build(BuildContext context) {
+    final String departureHint = AppLocalizations.of(context)!.departureHint;
+    final String destinationHint = AppLocalizations.of(context)!.destinationHint;
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,10 +75,10 @@ class _DirectoinsSearchState extends State<DirectoinsSearch> {
               child: TextField(
                 controller: _controller,
                 //onChanged: widget.onDepartureEditingComplete,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: InputBorder.none, // Remove the default border
-                  hintText: 'Departure',
-                  contentPadding: EdgeInsets.symmetric(
+                  hintText: departureHint,
+                  contentPadding: const EdgeInsets.symmetric(
                       horizontal: 10), // Optional: Adjust text padding
                 ),
                 style: const TextStyle(
@@ -97,10 +100,10 @@ class _DirectoinsSearchState extends State<DirectoinsSearch> {
                 controller: _controller2,
                 textInputAction: TextInputAction.go,
                 //onChanged: widget.onDirectionEditingComplete,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: InputBorder.none, // Remove the default border
-                  hintText: 'destination',
-                  contentPadding: EdgeInsets.symmetric(
+                  hintText: destinationHint,
+                  contentPadding: const EdgeInsets.symmetric(
                       horizontal: 10), // Optional: Adjust text padding
                 ),
                 style: const TextStyle(

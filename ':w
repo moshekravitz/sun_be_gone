@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:sun_be_gone/utils/logger.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DateTimePickerButton extends StatelessWidget {
   final DateTime dateTime;
@@ -26,25 +25,20 @@ class DateTimePickerButton extends StatelessWidget {
             onConfirm: onConfirm,
             currentTime: dateTime,
           ),
-          child: buildTimePicker(context),
+          child: buildTimePicker(),
         ),
       ),
     );
   }
 
-  Widget buildTimePicker(BuildContext context) {
-    final String departureStrLocle = AppLocalizations.of(context)!.departureAt;
-    final String departureStr =
-        '$departureStrLocle ${DateFormat.Hm().format(dateTime)}';
-    final String departureStr2 =
-        '$departureStrLocle ${DateFormat.MMMMd().add_Hm().format(dateTime)}';
+  Widget buildTimePicker() {
     logger.i('building date time');
     if (dateTime.day == DateTime.now().day) {
       return Row(
         children: [
           Text(
             //'Departure at ${dateTime.hour}:${dateTime.minute} ',
-            departureStr,
+            'Departure at ${DateFormat.Hm().format(dateTime)}',
           ),
           const Icon(
             Icons.arrow_drop_down,
@@ -54,7 +48,7 @@ class DateTimePickerButton extends StatelessWidget {
     } else {
       return Text(
         //'Departure at ${dateTime.day}/${dateTime.month}, ${dateTime.hour}:${dateTime.minute} ',
-        departureStr2,
+        'Departure at ${DateFormat.MMMMd().add_Hm().format(dateTime)} ',
       );
     }
   }

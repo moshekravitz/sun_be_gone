@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:sun_be_gone/ad_state.dart';
 import 'package:sun_be_gone/utils/logger.dart';
 import 'package:sun_be_gone/views/homescreen/enter_search.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Home extends StatelessWidget {
   final OnSearchTapped onSearchTapped;
@@ -12,6 +13,12 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String textAboveEnter =
+        AppLocalizations.of(context)!.aboveSearchEnter;
+    final Alignment alignment =
+        Localizations.localeOf(context).languageCode == 'en'
+            ? Alignment.centerLeft
+            : Alignment.centerRight;
     return Scaffold(
       // Body
       body: Column(
@@ -39,10 +46,10 @@ class Home extends StatelessWidget {
                       children: <Widget>[
                         Container(
                           height: 30,
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            'Where are you headed today?',
-                            style: TextStyle(fontSize: 16),
+                          alignment: alignment,
+                          child: Text(
+                            textAboveEnter,
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
                         EnterSearch(onSearchTapped: onSearchTapped),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sun_be_gone/bloc/actions.dart';
 import 'package:sun_be_gone/bloc/app_bloc.dart';
 import 'package:sun_be_gone/bloc/app_state.dart';
@@ -29,10 +31,24 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Sun Be Gone',
+      onGenerateTitle: (context) {
+        return AppLocalizations.of(context)!.appTitle;
+      },
+      //title: "SunBeGone", // AppLocalizations.of(context)!.appTitle,
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
+      localizationsDelegates: const [
+        // ... app-specific localization delegate[s] here
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('he', ''), // Hebrew, no country code
+        Locale('en', ''), // English, no country code
+      ],
       home: MultiBlocProvider(
         providers: [
           BlocProvider(
@@ -76,15 +92,21 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String dialogOk = AppLocalizations.of(context)!.dialogOk;
+    final String dialogErrorTitle =
+        AppLocalizations.of(context)!.dialogErrorTitle;
+    final String dialogPleaseWait =
+        AppLocalizations.of(context)!.dialogPleaseWaitContent;
     return BlocConsumer<AppBloc, AppState>(
       listener: (context, appState) {
         logger.i('app stata: $appState');
         if (appState is ErrorState) {
           showGenericDialog<bool>(
             context: context,
-            title: 'Error',
-            content: appState.error.message,
-            optionsBuilder: () => {'OK': true},
+            title: dialogErrorTitle,
+            //content: appState.error.message,
+            content:  appState.error.getMessage(context),
+            optionsBuilder: () => {dialogOk: true},
           );
           context.read<NavIndexCubit>().setIndex(const NavIndex(Pages.home));
           if (appState.error.type == ErrorType.networkConnection) {
@@ -98,7 +120,7 @@ class MainScreen extends StatelessWidget {
           logger.i('is loading state');
           LoadingScreen.instance().show(
             context: context,
-            text: 'please wait',
+            text: dialogPleaseWait,
           );
         } else {
           logger.i('is not loading state');
@@ -115,7 +137,7 @@ class MainScreen extends StatelessWidget {
             logger.i('init state Not init from listener');
             LoadingScreen.instance().show(
               context: context,
-              text: 'please wait',
+              text: dialogPleaseWait,
             );
           }
         }

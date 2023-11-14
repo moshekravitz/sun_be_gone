@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sun_be_gone/utils/result_animation_util.dart';
 import 'package:sun_business/sun_business.dart'
     show SittingInfo, SittingPosition;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AnimatedCurvedProgressBar extends StatefulWidget {
   final SittingInfo sittingInfo;
@@ -64,7 +65,8 @@ class StaggeredAnimation extends StatelessWidget {
   final SittingInfo sittingInfo;
   late final String _sittingPosition;
 
-  StaggeredAnimation({super.key, required this.controller, required this.sittingInfo})
+  StaggeredAnimation(
+      {super.key, required this.controller, required this.sittingInfo})
       : firstPhaseAnimation = Tween<double>(
           begin: 0.0,
           end: 1.0,
@@ -103,16 +105,28 @@ class StaggeredAnimation extends StatelessWidget {
               curve: Curves.easeInOutQuart,
             ),
           ),
-        ),
+        )
+  /*
         _sittingPosition = switch (sittingInfo.position) {
           SittingPosition.left => 'Left',
           SittingPosition.right => 'Right',
           SittingPosition.both => ' both',
           () => 'both'
         };
+        */
+  ;
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
+    _sittingPosition = switch (sittingInfo.position) {
+      SittingPosition.left => locale.sittingLeft,
+      SittingPosition.right => locale.sittingRight,
+      SittingPosition.both => locale.sittingBoth,
+      () => locale.sittingBoth
+    };
+    final String sittingWith = locale.sittingWith;
+    final String sittingProtection = locale.sittingProtection;
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
@@ -173,7 +187,7 @@ class StaggeredAnimation extends StatelessWidget {
                             padding: EdgeInsets.fromLTRB(
                                 5, 5, 5, (30 * thirdPhaseAnimation.value)),
                             child: Text(
-                              'with ${sittingInfo.protectionPercentage}% protection \n from UV rays!',
+                              '$sittingWith ${sittingInfo.protectionPercentage}% $sittingProtection!',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: thirdPhaseAnimation.value * 15,

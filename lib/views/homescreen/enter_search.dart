@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef OnSearchTapped = void Function();
 
@@ -16,6 +17,7 @@ class EnterSearch extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String searchHint = AppLocalizations.of(context)!.searchTitle;
     return Center(
       child: GestureDetector(
         onTap: onSearchTapped,
@@ -39,17 +41,17 @@ class EnterSearch extends HookWidget {
                 width: 1.0,
                 style: BorderStyle.solid),
           ),
-          child: const Row(
+          child: Row(
             children: [
               Expanded(
                 child: Text(
-                  'Search',
-                  style: TextStyle(
+                  searchHint,
+                  style: const TextStyle(
                     fontSize: 18.0,
                   ),
                 ),
               ),
-              Icon(
+              const Icon(
                 Icons.search,
                 size: 30.0,
                 color: Colors.blue,

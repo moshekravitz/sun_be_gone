@@ -33,9 +33,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    String directionButtonText = AppLocalizations.of(context)!.directionButton;
-    String linesButtonText = AppLocalizations.of(context)!.linesButton;
-    String notFoundText = AppLocalizations.of(context)!.notFound;
+    String directionButtonText = AppLocalizations.of(context)!.directions;
     logger.i('building search page');
     return BlocBuilder<DateTimeCubit, DateTime>(builder: (context, dateTime) {
       return Column(
@@ -66,12 +64,12 @@ class _SearchPageState extends State<SearchPage> {
                       SizedBox(
                           height: 35,
                           width: 110,
-                          child: buildTabButton(directionButtonText, 0)),
+                          child: buildTabButton('Directions', 0)),
                       const SizedBox(width: 10),
                       SizedBox(
                           height: 35,
                           width: 110,
-                          child: buildTabButton(linesButtonText, 1)),
+                          child: buildTabButton('Lines', 1)),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -111,7 +109,7 @@ class _SearchPageState extends State<SearchPage> {
                 context.read<BusRotuesBloc>().add(const GetBusRoutesAction());
               }
             }, builder: (context, state) {
-              if (state.busRoutes.isEmpty) Text(notFoundText);
+              if (state.busRoutes.isEmpty) const Text('No routes found');
               return RoutesListView(
                 dateTime: dateTime,
                 routes: state.busRoutes,

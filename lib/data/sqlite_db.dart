@@ -156,7 +156,6 @@ class BusRoutesQuaryDB implements BusRoutesQuaryDBInterface {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
-    //print('stops map from save db: ${routeQuaryData.toMap()');
     return res;
   }
 
