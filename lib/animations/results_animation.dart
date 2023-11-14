@@ -207,8 +207,8 @@ class StaggeredAnimation extends StatelessWidget {
 }
 
 class CurvedProgressBarPainter extends CustomPainter {
-  final double progress;
   final List<(double, SittingPosition)> segmentLengths;
+  final double progress;
 
   CurvedProgressBarPainter({
     required this.segmentLengths,
@@ -223,6 +223,20 @@ class CurvedProgressBarPainter extends CustomPainter {
         center: Offset(size.width / 2, size.height / 2), radius: 120);
 
     double currentSegmentStartAngle = startAngle;
+    if(segmentLengths.length == 1){
+        final paint = Paint()
+            ..style = PaintingStyle.stroke
+            ..color = ResultAnimationUtil.determinColor(segmentLengths[0].$2)
+            ..strokeWidth = 10;
+        canvas.drawArc(
+            rect,
+            currentSegmentStartAngle,
+            sweepAngle,
+            false,
+            paint,
+        );
+        return;
+    }
     for (int i = 1; i < segmentLengths.length; i++) {
       final paint = Paint()
         ..style = PaintingStyle.stroke

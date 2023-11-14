@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:sun_be_gone/bloc/actions.dart';
 import 'package:sun_be_gone/bloc/app_state.dart';
 import 'package:sun_be_gone/data/app_cache.dart';
@@ -46,6 +47,13 @@ class AppBloc extends Bloc<AppAction, AppState> {
       logger.i('on InitAppAction');
       final Iterable<BusRoutes> routes;
       try {
+        final ConnectivityResult connectivityResult =
+            await Connectivity().checkConnectivity();
+        if (connectivityResult == ConnectivityResult.none) {
+          emit(const InitState(isInitialized: true));
+          return;
+        }
+
         ApiResponse<String> checkLive = await serverConnectionApi.checkLive();
         if (checkLive.data != 'Healthy') {
           emit(
@@ -56,13 +64,8 @@ class AppBloc extends Bloc<AppAction, AppState> {
             await serverConnectionApi.checkHealth();
         if (checkHealth.data != 'Healthy') {
           if (checkHealth.statusCode == 0) {
-            emit(ErrorState(
-              error: Errors(
-                ErrorType.networkConnection,
-                null,
-                checkHealth,
-              ),
-            ));
+            logger.i('no internet connection');
+            emit(const InitState(isInitialized: true));
           }
           emit(ErrorState(
             error: Errors(
@@ -96,6 +99,32 @@ class AppBloc extends Bloc<AppAction, AppState> {
 
       emit(const IsLoadingState());
       logger.i('started loading in GetRoutesAction');
+      try {
+        //check internet connection
+        final ConnectivityResult connectivityResult =
+            await Connectivity().checkConnectivity();
+        if (connectivityResult == ConnectivityResult.none) {
+          emit(ErrorState(
+            error: Errors(
+              ErrorType.networkConnection,
+              null,
+              null,
+            ),
+          ));
+          return;
+        }
+      } catch (e) {
+        logger.e('connectivity gave an error', e);
+        emit(ErrorState(
+          error: Errors(
+            ErrorType.appError,
+            e is Error ? e : null,
+            null,
+          ),
+        ));
+        return;
+      }
+
       if (AppCache.instance().busRoutesIsComplete) {
         emit(RoutesReadyState(
           routes: AppCache.instance().busRoutes!,
@@ -368,14 +397,21 @@ class AppBloc extends Bloc<AppAction, AppState> {
       Iterable<BusRoutes>? busRoutes = AppCache.instance().busRoutes;
       if (busRoutes == null) {
         logger.i('busRoutes is null in NavigatedToBookmarksAction');
-        emit(ErrorState(
-          error: Errors(
-            ErrorType.appError,
-            null,
-            null,
-          ),
-        ));
-        return;
+        try {
+          busRoutes = await busRoutesDB.getBusRoutes();
+          AppCache.instance().busRoutes = busRoutes;
+          logger.i('got busRoutes from db');
+        } catch (e) {
+          logger.e('error in NavigatedToBookmarksAction error', e);
+          emit(ErrorState(
+            error: Errors(
+              ErrorType.appError,
+              null,
+              null,
+            ),
+          ));
+          return;
+        }
       }
       Iterable<int> historyRouteIds;
       Iterable<int> favoriteRouteIds;
