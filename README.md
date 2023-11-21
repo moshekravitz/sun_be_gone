@@ -52,6 +52,7 @@ This project includes a custom package specifically designed to calculate the po
 - **Sun Position Calculation:** Determining the sun's position based on geographic coordinates and time, aiding in suggesting the best seat to avoid direct sunlight.
     - This part of the package is written using a modified version of the Solar Position Algorithm (SPA)
 - **Route Analysis:** Analyzing the bus route to predict the varying angles of sunlight at different times.
+    -this includes calculating the overrall sitting position which is done by calculating the the angle between a given direction vector on the route and the sun (for each geopoint of the route)
 
 
 ## Contributing
