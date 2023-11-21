@@ -50,7 +50,7 @@ $ flutter run
 This project includes a custom package specifically designed to calculate the position of the sun along a bus route. The package provides functionality for:
 
 - **Sun Position Calculation:** Determining the sun's position based on geographic coordinates and time, aiding in suggesting the best seat to avoid direct sunlight.
-    -This part of the package is written using a modified version of the Solar Position Algorithm (SPA)
+    - This part of the package is written using a modified version of the Solar Position Algorithm (SPA)
 - **Route Analysis:** Analyzing the bus route to predict the varying angles of sunlight at different times.
 
 
