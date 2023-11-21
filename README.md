@@ -6,7 +6,7 @@ Sun Be Gone is a mobile app developed using Flutter that helps users determine t
 
 ### Available at Google Play
 
-You can [download](https://play.google.com/store/apps/details?id=com.mkradevrbs.sun_be_gonethe) the app from the Play Store.
+You can [download](https://play.google.com/store/apps/details?id=com.mkradevrbs.sun_be_gone) the app from the Play Store.
 
 ## Features
 
