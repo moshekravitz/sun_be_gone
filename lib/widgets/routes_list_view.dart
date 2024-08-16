@@ -60,7 +60,7 @@ class _RoutesListViewState extends State<RoutesListView> {
           children: [
             Expanded(
               child: ListView.separated(
-                separatorBuilder: (context, index) => const Divider(height: 1),
+                separatorBuilder: (context, index) => const Divider(height: 1, color: Colors.black12),
                 itemCount: widget.routes.length,
                 itemBuilder: (context, index) {
                   return SizedBox(

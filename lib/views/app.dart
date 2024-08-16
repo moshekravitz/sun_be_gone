@@ -36,7 +36,12 @@ class App extends StatelessWidget {
       },
       //title: "SunBeGone", // AppLocalizations.of(context)!.appTitle,
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        //primarySwatch: Colors.green,
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.green,
+          //accentColor: Colors.green,
+          //brightness: Brightness.light,
+        ),
       ),
       localizationsDelegates: const [
         // ... app-specific localization delegate[s] here

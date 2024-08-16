@@ -65,13 +65,13 @@ class _SearchPageState extends State<SearchPage> {
                       const SizedBox(width: 20),
                       SizedBox(
                           height: 35,
-                          width: 110,
-                          child: buildTabButton(directionButtonText, 0)),
+                          width: 120,
+                          child: buildTabButton(linesButtonText, 0)),
                       const SizedBox(width: 10),
                       SizedBox(
                           height: 35,
-                          width: 110,
-                          child: buildTabButton(linesButtonText, 1)),
+                          width: 120,
+                          child: buildTabButton(directionButtonText, 1)),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -82,8 +82,8 @@ class _SearchPageState extends State<SearchPage> {
                     children: <Widget>[
                       SizedBox(
                           child: _selectedTabIndex == 0
-                              ? buildDirectionsSearch()
-                              : buildLinesSearch())
+                              ? buildLinesSearch()
+                              : buildDirectionsSearch())
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -135,13 +135,13 @@ class _SearchPageState extends State<SearchPage> {
               });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: null,
+              backgroundColor: Colors.green, //null,
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: Center(child: Text(text)),
+            child: Center(child: Text(text, style: const TextStyle(color: Colors.white))),
           )
         : GestureDetector(
             onTap: () {

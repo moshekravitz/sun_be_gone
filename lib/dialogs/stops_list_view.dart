@@ -96,7 +96,11 @@ class _StopsListViewState extends State<StopsListView> {
     final String stopTitle = AppLocalizations.of(context)!.stopsDialogTitle;
     return Scaffold(
       appBar: AppBar(
-        title: Text(stopTitle),
+        title: Text(stopTitle, overflow: TextOverflow.visible, textAlign: TextAlign.start),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.green,
       ),
       body: ListView.builder(
         itemCount: busStops.length,

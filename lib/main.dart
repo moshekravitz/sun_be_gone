@@ -29,8 +29,8 @@ void main() async {
     logger.i('details context: ${details.context}');
     logger.e('FlutterError.onError stack: ${details.stack}', details.exception);
     //if app has no connection to the internet, then don't send error to server
-    var connectivity = await Connectivity().checkConnectivity();
-    if (connectivity == ConnectivityResult.none) {
+    List<ConnectivityResult> connectivity = await Connectivity().checkConnectivity();
+    if (connectivity.contains(ConnectivityResult.none)) {
       return;
     }
 

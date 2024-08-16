@@ -41,9 +41,10 @@ class MainApp extends StatelessWidget {
                     )
                   : Scaffold(
                       appBar: AppBar(
+                        backgroundColor: Colors.green,
                         title: Center(
                           //child: Text(pagesNames[navIndex.index]),
-                          child: Text(navIndex.name(context)),
+                          child: Text(navIndex.name(context), style: const TextStyle(color: Colors.white)),
                         ),
                       ),
                       body: switch (navIndex.pageIndex) {

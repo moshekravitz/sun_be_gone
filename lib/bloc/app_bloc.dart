@@ -47,9 +47,9 @@ class AppBloc extends Bloc<AppAction, AppState> {
       logger.i('on InitAppAction');
       final Iterable<BusRoutes> routes;
       try {
-        final ConnectivityResult connectivityResult =
+        final List<ConnectivityResult> connectivityResult =
             await Connectivity().checkConnectivity();
-        if (connectivityResult == ConnectivityResult.none) {
+        if (connectivityResult.contains(ConnectivityResult.none)) {
           emit(const InitState(isInitialized: true));
           return;
         }
@@ -80,7 +80,8 @@ class AppBloc extends Bloc<AppAction, AppState> {
         logger.i('got routes from local db, length: ${routes.length}');
         AppCache.instance().busRoutes = routes;
       } catch (e) {
-        logger.e('routes api gave an error', e);
+        //logger.e('routes api gave an error', e);
+        print('routes api gave an error ${e.toString()}');
         emit(ErrorState(
           error: Errors(
             ErrorType.appError,
@@ -101,9 +102,9 @@ class AppBloc extends Bloc<AppAction, AppState> {
       logger.i('started loading in GetRoutesAction');
       try {
         //check internet connection
-        final ConnectivityResult connectivityResult =
+        final List<ConnectivityResult> connectivityResult =
             await Connectivity().checkConnectivity();
-        if (connectivityResult == ConnectivityResult.none) {
+        if (connectivityResult.contains(ConnectivityResult.none)) {
           emit(ErrorState(
             error: Errors(
               ErrorType.networkConnection,

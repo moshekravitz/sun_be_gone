@@ -38,7 +38,7 @@ class _LinesSearchState extends State<LinesSearch> {
           //white space
           const SizedBox(height: 20),
           Container(
-            width: 350,
+            width: 330,
             height: 45,
             decoration: BoxDecoration(
               color: Colors.grey[300],
@@ -51,6 +51,9 @@ class _LinesSearchState extends State<LinesSearch> {
               decoration: InputDecoration(
                 border: InputBorder.none, // Remove the default border
                 hintText: lineHint,
+                hintStyle: const TextStyle(
+                    fontWeight: FontWeight.w200,
+                    color: Colors.black), // Optional: Add hint text style
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 10), // Optional: Adjust text padding
               ),
